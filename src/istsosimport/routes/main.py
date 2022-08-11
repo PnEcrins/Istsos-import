@@ -45,18 +45,18 @@ def home():
     procedure_schema = ProcedureSchema()
     for d in data:
         s = procedure_schema.dump(d)
-        print(s)
     return render_template("home.html")
 
 
 @blueprint.route("/upload", methods=["GET", "POST"])
 def upload():
-    db.session.connection(
-        execution_options={"schema_translate_map": {"per_service": "ecrins"}}
-    )
+    # db.session.connection(
+    #     execution_options={"schema_translate_map": {"per_service": "ecrins"}}
+    # )
     if request.method == "GET":
-        procs = db.session.query(Procedure).all()
-        return render_template("import.html", procedures=procs)
+        return render_template(
+            "import.html", services=current_app.config["SOS_SERVICES"]
+        )
     else:
         f = request.files["file"]
         data = request.form
@@ -69,8 +69,10 @@ def upload():
         return redirect(url_for("main.mapping", id_prc=id_prc, filename=filename))
 
 
-@blueprint.route("/mapping/<int:id_prc>/<filename>")
-@blueprint.route("/mapping/<int:id_prc>/<filename>/missing_cols/<missing_cols>")
+@blueprint.route("/<service>/mapping/<int:id_prc>/<filename>")
+@blueprint.route(
+    "/<service>/mapping/<int:id_prc>/<filename>/missing_cols/<missing_cols>"
+)
 def mapping(id_prc, filename, missing_cols=[]):
     if missing_cols:
         missing_cols = missing_cols.split(",")
@@ -104,7 +106,7 @@ def mapping(id_prc, filename, missing_cols=[]):
     )
 
 
-@blueprint.route("/load", methods=["POST"])
+@blueprint.route("/<service>/load", methods=["POST"])
 def load():
     db.session.connection(
         execution_options={"schema_translate_map": {"per_service": "ecrins"}}

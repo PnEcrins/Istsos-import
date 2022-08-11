@@ -1,3 +1,4 @@
+from dataclasses import Field
 import os
 from marshmallow import (
     Schema,
@@ -42,3 +43,4 @@ class Config(Schema):
     CELERY = fields.Nested(CeleryConfig)
     MAIL_CONFIG = fields.Nested(MailConfig)
     UPLOAD_FOLDER = fields.String(load_default=str(ROOT_DIR / "uploaded_files"))
+    SOS_SERVICES = fields.List(fields.String, required=True)

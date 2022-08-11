@@ -1,6 +1,6 @@
 import logging
 
-from flask import Flask
+from flask import Flask, g, session
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from istsosimport.config.config_parser import config
@@ -32,6 +32,22 @@ def create_app():
     app.register_blueprint(blueprint)
     from istsosimport.routes.api import blueprint
 
-    app.register_blueprint(blueprint, url_prefix="/api")
+    app.register_blueprint(blueprint)
+
+    @app.url_defaults
+    def add_service(endpoint, values):
+        if "service" in values:
+            return
+        if app.url_map.is_endpoint_expecting(endpoint, "service"):
+            values["service"] = g.service
+
+    # set the database schema for all session requests from the service mentionned in the URL
+    @app.url_value_preprocessor
+    def pull_service(endpoint, values):
+        if values:
+            g.service = values.pop("service", None)
+            db.session.connection(
+                execution_options={"schema_translate_map": {"per_service": g.service}}
+            )
 
     return app
