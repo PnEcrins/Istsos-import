@@ -1,0 +1,23 @@
+/* .center {
+    margin-left: 10%;
+} */
+
+body {
+    background-color: #dce0e4
+}
+
+.container {
+    background-color: white;
+}
+
+nav {
+    height: 5vh;
+}
+
+#content-wrapper {
+    height: 93vh;
+}
+
+#content {
+    margin-top: 2vh
+}

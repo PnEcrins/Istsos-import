@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Import{% endblock %}
+{% block head %}
+{{ super() }}
+
+{% endblock %}
+{% block content %}
+<h1> File import </h1>
+<div class="row">
+   <form action = "upload" method = "POST" 
+      enctype = "multipart/form-data">
+      <div class="mb-3">
+         <label for="procedure" class="form-label">Procedure</label>
+         <select class="form-select" name="procedure" id="proc" >
+            {% for proc in procedures %}
+               <option value="{{proc.id_prc}}"> {{proc.name_prc}} </option>
+            {% endfor %}
+         </select>
+      </div>
+      <div class="mb-3">
+         <input class="form-control" type = "file" name = "file" />
+      </div>
+      <div class="mb-3">
+         <label for="separator">File separator</label>
+         <select class="form-select mb-3" name="separator" id="séparateur" >
+               <option value=";"> ;</option>
+               <option value=","> ,</option>
+               <option value="\t"> tab</option>
+         </select>
+      </div>
+      <div class="mb-3">
+         <label for="mail_recipient">Mail (for import report)</label>
+         <input class="form-control" type="text" name="mail_recipient">
+      </div>
+      <button type="submit" class="btn btn-primary">
+         Upload
+      </button>
+
+
+   </form>  
+</div>
+
+{% endblock %}

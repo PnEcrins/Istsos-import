@@ -1,0 +1,29 @@
+<p>
+    Import of procedure {{procedure.name_prc}} is finished.
+
+    It successfully import {{number_imported}} row ( {{total_row}} total )
+</p>
+<p>
+
+    {% if error_message %} 
+    <p>
+        Some rows are in error... <br>
+        Number of errors : {{error_message|length}} <br>
+
+        You can download the data in error  
+        <a href="{{base_url}}/static/error_files/"{{file_error}}">here</a>
+    </p>
+    <h5> Error trace : </h5>
+    <small>
+        <ul>
+            {% for m in error_message %}
+            <li>
+                {{m|safe}}
+            </li>
+            {% endfor %}
+        </ul>
+    </small>
+    {% endif %}
+
+
+</p>

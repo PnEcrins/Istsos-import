@@ -1,0 +1,18 @@
+SQLALCHEMY_DATABASE_URI = "postgresql://monuser:monpassachanger@localhost:5432/istsos"
+ISTSOS_API_URL = "http://localhost/istsos"
+SERVICE = 'ecrins'
+SECRET_KEY = "supersecretkey"
+
+[CELERY]
+    broker_url = "redis://localhost:6379/0"
+    result_backend = "redis://localhost:6379/0"
+
+[MAIL_CONFIG]
+    MAIL_SERVER = 'mail.espaces-naturels.fr'
+    MAIL_PORT = 465
+    MAIL_USE_TLS = false
+    MAIL_USE_SSL = true
+    MAIL_USERNAME = 'email_adresse@email.fr'
+    MAIL_PASSWORD = 'pass'
+    MAIL_ASCII_ATTACHMENTS = false
+    MAIL_DEFAULT_SENDER = '<noreply>@email.fr'

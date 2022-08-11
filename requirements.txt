@@ -1,0 +1,14 @@
+flask
+SQLAlchemy
+flask-sqlalchemy
+Marshmallow
+flask-marshmallow
+marshmallow-sqlalchemy
+python-dotenv
+toml
+psycopg2
+psycopg2-binary
+pandas
+requests
+celery[redis]==4.4.7
+flask-mail

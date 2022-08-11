@@ -1,0 +1,5 @@
+# Instalation
+
+::
+
+    apt install redis

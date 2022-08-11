@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Import{% endblock %}
+{% block head %}
+{{ super() }}
+
+{% endblock %}
+{% block content %}
+<div class="mb-5 w-50 mx-auto">
+    <h1 >Fields mapping</h1>
+    <h3 >Procedure : {{procedure.name_prc}}</h3>
+</div>
+    
+    <form action="{{url_for('main.load')}}" method="POST" >
+    <input type="text" name="id_prc" value="{{procedure.id_prc}}" hidden>
+    <input type="text" name="filename" value="{{filename}}" hidden>
+    {% if missing_cols %}
+    <div class="alert alert-danger">
+        The procedure have some observed properties not found with the given mapping : 
+        <ul>
+        {% for col in missing_cols %} 
+            <li> {{col}} </li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-2"><h5> Source</h5> </div>
+        <div class="col-10"> <h5> Destination</h5> </div>
+    </div>
+       {% for name in in_columns_name%}
+        <div class="row">
+            <div class="mb-3 col-2">
+                {{name}}
+                <!-- <input name="in:{{name}}" class="form-control" type="text" value="{{name}}" disabled/> -->
+            </div>
+            <div class="mb-3 col-10">
+                <select class="form-select" name="{{name}}" >
+                    <option value="null"> --Select an observed property-- </option>
+                    <option value="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"> Date (format iso8601) </option>
+                    {% for o in observed_properties %}
+                    <option value="{{o.def_opr}}"> {{o.name_opr}} </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary ">
+            Send data
+         </button>
+
+
+
+
+         
+
+
+   </form>  
+
+
+{% endblock %}
