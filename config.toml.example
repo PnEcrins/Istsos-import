@@ -2,6 +2,8 @@ SQLALCHEMY_DATABASE_URI = "postgresql://monuser:monpassachanger@localhost:5432/i
 ISTSOS_API_URL = "http://localhost/istsos"
 SERVICE = 'ecrins'
 SECRET_KEY = "supersecretkey"
+SOS_SERVICES = ["my service 1", "myservice 2"]
+
 
 [CELERY]
     broker_url = "redis://localhost:6379/0"

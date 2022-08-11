@@ -1,20 +1,26 @@
 {% extends "base.html" %}
-{% block title %}Import{% endblock %}
 {% block head %}
 {{ super() }}
 
 {% endblock %}
 {% block content %}
 <h1> File import </h1>
-<div class="row">
+<div id="app" class="row">
+   Hello test : ${test}
    <form action = "upload" method = "POST" 
       enctype = "multipart/form-data">
       <div class="mb-3">
+         <label for="service" class="form-label">Service</label>
+         <select class="form-select" name="procedure" id="proc" >
+            {% for service in services %}
+               <option value="{{service}}"> {{service}} </option>
+            {% endfor %}
+         </select>
+      </div>
+      <div class="mb-3">
          <label for="procedure" class="form-label">Procedure</label>
          <select class="form-select" name="procedure" id="proc" >
-            {% for proc in procedures %}
-               <option value="{{proc.id_prc}}"> {{proc.name_prc}} </option>
-            {% endfor %}
+               <option value=""> A remplir </option>
          </select>
       </div>
       <div class="mb-3">
@@ -40,4 +46,6 @@
    </form>  
 </div>
 
+<script type="module" src="{{url_for("static", filename='js/import.js')}}"></script>
 {% endblock %}
+

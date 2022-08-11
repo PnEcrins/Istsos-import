@@ -11,7 +11,7 @@ Create a python virtualenv and install dependencies
     source venv/bin/activate
     pip install requirements.txt
 
-Run flask app and celery app in two separate terminal
+Run flask app and celery app in two separate terminals
 
     flask run
     celery -A istsosimport.celery_app worker -l INFO

@@ -6,8 +6,11 @@
     <link rel="stylesheet" href={{url_for("static", filename="node_modules/bootstrap/dist/css/bootstrap.min.css")}} />
     <link rel="stylesheet" href={{url_for("static", filename="css/main.css")}} />
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://unpkg.com/petite-vue"></script>
+    <script src=" {{url_for('static', filename='node_modules/petite-vue/dist/petite-vue.umd.js')}} " > </script>
 
-    <title>{% block title %}{% endblock %}</title>
+
+    <title>{% block title %}IstSOS Import{% endblock %}</title>
     {% endblock %}
 </head>
 <body>
