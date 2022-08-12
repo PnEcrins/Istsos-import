@@ -6,21 +6,21 @@
 {% block content %}
 <h1> File import </h1>
 <div id="app" class="row">
-   Hello test : ${test}
    <form action = "upload" method = "POST" 
       enctype = "multipart/form-data">
       <div class="mb-3">
          <label for="service" class="form-label">Service</label>
-         <select class="form-select" name="procedure" id="proc" >
+         <select v-model="currentService" v-on:change="fetchProcedure" class="form-select" name="procedure" id="proc" >
             {% for service in services %}
-               <option value="{{service}}"> {{service}} </option>
+               <option  :value="null"> -- Select a service -- </option>
+               <option  value="{{service}}"> {{service}} </option>
             {% endfor %}
          </select>
       </div>
       <div class="mb-3">
          <label for="procedure" class="form-label">Procedure</label>
          <select class="form-select" name="procedure" id="proc" >
-               <option value=""> A remplir </option>
+               <option v-for="procedure in procedures" :value="procedure.id_prc"> ${procedure.name_prc} </option>
          </select>
       </div>
       <div class="mb-3">
