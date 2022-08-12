@@ -33,7 +33,7 @@
                 <!-- <input name="in:{{name}}" class="form-control" type="text" value="{{name}}" disabled/> -->
             </div>
             <div class="mb-3 col-10">
-                <select class="form-select" name="{{name}}" >
+                <select class="form-select" name="{{name}}" required>
                     <option value="null"> --Select an observed property-- </option>
                     <option value="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"> Date (format iso8601) </option>
                     {% for o in observed_properties %}
