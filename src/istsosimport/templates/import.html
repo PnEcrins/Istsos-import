@@ -6,7 +6,7 @@
 {% block content %}
 <h1> File import </h1>
 <div id="app" class="row">
-   <form action = "upload" method = "POST" 
+   <form action="upload" method = "POST" 
       enctype = "multipart/form-data">
       <div class="mb-3">
          <label for="service" class="form-label">Service</label>
@@ -14,12 +14,12 @@
             v-model="currentService" 
             v-on:change="fetchProcedure" 
             class="form-select" 
-            name="procedure" 
+            name="service" 
             id="proc" 
             required
          >
+            <option  :value="null"> -- Select a service -- </option>
             {% for service in services %}
-               <option  :value="null"> -- Select a service -- </option>
                <option  value="{{service}}"> {{service}} </option>
             {% endfor %}
          </select>
