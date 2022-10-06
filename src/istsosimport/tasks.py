@@ -25,32 +25,26 @@ from istsosimport.db.utils import get_schema_session
 log = logging.getLogger()
 
 
-# @celery_app.task(bind=True)
-def import_data(id_prc, filename, separator, config, csv_mapping, service):
-    with ExitStack() as stack:
-        session = stack.enter_context(get_schema_session(service))
-        procedure = (
-            session.query(Procedure)
-            .options(
-                joinedload(Procedure.proc_obs).joinedload(ProcObs.observed_property)
-            )
-            .get(id_prc)
-        )
-        file_eror_name = FILE_ERROR_DIRECTORY / str(
-            procedure.name_prc + "_" + str(datetime.now())
-        )
-        procedure_dict = ProcedureSchema().dump(procedure)
+@celery_app.task(bind=True)
+def import_data(self, id_prc, filename, separator, config, csv_mapping, service):
+    session = get_schema_session(service)
+    procedure = session.query(Procedure).get(id_prc)
+    file_eror_name = FILE_ERROR_DIRECTORY / str(
+        procedure.name_prc + "_" + str(datetime.now())
+    )
+    procedure_dict = ProcedureSchema().dump(procedure)
 
-        file_error = open(file_eror_name, "w")
-        with open(os.path.join(config["UPLOAD_FOLDER"], filename)) as csvfile:
-            csvreader = csv.DictReader(csvfile, delimiter=separator)
-            csv_writer = csv.DictWriter(
-                file_error, delimiter=separator, fieldnames=csvreader.fieldnames
-            )
-            total_succeed = 0
-            total_rows = 0
-            error_message = []
-            for row in csvreader:
+    file_error = open(file_eror_name, "w")
+    with open(os.path.join(config["UPLOAD_FOLDER"], filename)) as csvfile:
+        csvreader = csv.DictReader(csvfile, delimiter=separator)
+        csv_writer = csv.DictWriter(
+            file_error, delimiter=separator, fieldnames=csvreader.fieldnames
+        )
+        total_succeed = 0
+        total_rows = 0
+        error_message = []
+        for row in csvreader:
+            with get_schema_session(service) as current_session:
                 total_rows = total_rows + 1
                 date_col = csv_mapping[
                     "urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"
@@ -70,17 +64,15 @@ def import_data(id_prc, filename, separator, config, csv_mapping, service):
                     measure = Measure(val_msr=floated_value, id_pro_fk=proc["id_pro"])
                     measure.set_quality(proc)
                     eventtime.measures.append(measure)
-                    session.add(eventtime)
+                    current_session.add(eventtime)
                 try:
-                    session.commit()
+                    current_session.commit()
+                    db.session.commit()
                     total_succeed = total_succeed + 1
                 except exc.SQLAlchemyError as e:
                     log.error(e)
                     error_message.append(e)
                     csv_writer.writerow(row)
-                    db.session.rollback()
-                    stack.pop_all().close()
-                    session = stack.enter_context(get_schema_session(service))
 
         file_error.close()
         template = render_template(
@@ -91,5 +83,4 @@ def import_data(id_prc, filename, separator, config, csv_mapping, service):
             error_message=error_message,
             file_error=file_eror_name,
         )
-    print(template)
     send_mail("theo.lechemia@ecrins-parcnational.fr", "recap", template)

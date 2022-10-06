@@ -88,7 +88,9 @@ def upload():
 @blueprint.route("/<service>/mapping/<int:id_import>/")
 @blueprint.route("/<service>/mapping/<int:id_import>/<missing_cols>")
 def mapping(id_import, missing_cols=[]):
+    imp_schema = ImportSchema()
     imp = g.session.query(Import).get(id_import)
+    import_as_dict = imp_schema.dump(imp)
     if missing_cols:
         missing_cols = missing_cols.split(",")
     path = Path(current_app.config["UPLOAD_FOLDER"], imp.file_name)
@@ -100,53 +102,42 @@ def mapping(id_import, missing_cols=[]):
         for row in csv_reader:
             in_columns_name = row
             break
-    print("LAAAA", in_columns_name)
-    observed_properties = g.session.query(ObservedProperty).all()
-    observed_property_schema = ObservedProperySchema()
-    procedure = g.session.query(Procedure).get(imp.id_prc)
     return render_template(
         "mapping.html",
-        procedure=ProcedureSchema().dump(procedure),
+        id_import=id_import,
         in_columns_name=in_columns_name,
-        observed_properties=[
-            observed_property_schema.dump(o) for o in observed_properties
-        ],
-        filename=imp.file_name,
+        procedure=import_as_dict["procedure"],
         missing_cols=missing_cols,
     )
 
 
-@blueprint.route("/<service>/load", methods=["POST"])
-def load():
+@blueprint.route("/<service>/<int:id_import>/load", methods=["POST"])
+def load(id_import):
     data = request.form.to_dict()
-    id_prc = int(data.pop("id_prc"))
-    filename = data.pop("filename")
-
+    imp = g.session.query(Import).get(id_import)
     csv_mapping = {}
-    # make a correct mapping in a dict between expected column name (observed_prop) and the csv given column names
-    for in_col, out_col in data.items():
-        csv_mapping[out_col] = in_col
     missing_cols = []
+    # make a correct mapping in a dict between expected column name (observed_prop) and the csv given column names
+    for observed_prop, csv_col in data.items():
+        if csv_col == "null":
+            missing_cols.append(observed_prop)
+        csv_mapping[observed_prop] = csv_col
+    # check if all observed properties have a correponding column in csv
+    for proc in imp.procedure.proc_obs:
+        if not proc.observed_property.def_opr in data.keys():
+            missing_cols.append(proc.observed_property.def_opr)
     if missing_cols:
         return redirect(
             url_for(
                 "main.mapping",
-                id_prc=id_prc,
-                filename=filename,
+                service=g.service,
+                id_import=id_import,
                 missing_cols=",".join(missing_cols),
             )
         )
-    # import_data.delay(
-    #     id_prc=id_prc,
-    #     filename=filename,
-    #     separator=session.get("separator"),
-    #     config=config,
-    #     csv_mapping=csv_mapping,
-    #     service=g.service,
-    # )
     import_data(
-        id_prc=id_prc,
-        filename=filename,
+        id_prc=imp.id_prc,
+        filename=imp.file_name,
         separator=session.get("separator"),
         config=config,
         csv_mapping=csv_mapping,

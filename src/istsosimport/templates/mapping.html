@@ -9,9 +9,7 @@
     <h3 >Procedure : {{procedure.name_prc}}</h3>
 </div>
     
-    <form action="{{url_for('main.load')}}" method="POST" >
-    <input type="text" name="id_prc" value="{{procedure.id_prc}}" hidden>
-    <input type="text" name="filename" value="{{filename}}" hidden>
+    <form action="{{url_for('main.load', service=g.service, id_import=id_import)}}" method="POST" >
     {% if missing_cols %}
     <div class="alert alert-danger">
         The procedure have some observed properties not found with the given mapping : 
@@ -23,21 +21,32 @@
     </div>
     {% endif %}
     <div class="row">
-        <div class="col-2"><h5> Source</h5> </div>
-        <div class="col-10"> <h5> Destination</h5> </div>
+        <div class="col-2"><h5> Observed properties</h5> </div>
+        <div class="col-10"> <h5> File columns</h5> </div>
     </div>
-       {% for name in in_columns_name%}
+    <div class="row">
+        <div class="mb-3 col-2">
+            Date
+        </div>
+        <div class="mb-3 col-2">
+            <select class="form-select" name="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601" required>
+                <option value="null"> --</option>
+                {% for name in in_columns_name %}
+                <option value="{{name}}"> {{name}} </option>
+                {% endfor %}
+            </select>        
+        </div>
+    </div>
+       {% for proc_obs in procedure.proc_obs%}
         <div class="row">
             <div class="mb-3 col-2">
-                {{name}}
-                <!-- <input name="in:{{name}}" class="form-control" type="text" value="{{name}}" disabled/> -->
+                {{proc_obs.observed_property.name_opr}}
             </div>
             <div class="mb-3 col-10">
-                <select class="form-select" name="{{name}}" required>
-                    <option value="null"> --Select an observed property-- </option>
-                    <option value="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"> Date (format iso8601) </option>
-                    {% for o in observed_properties %}
-                    <option value="{{o.def_opr}}"> {{o.name_opr}} </option>
+                <select class="form-select" name="{{proc_obs.observed_property.def_opr}}" required>
+                    <option value="null"> --</option>
+                    {% for name in in_columns_name %}
+                    <option value="{{name}}"> {{name}} </option>
                     {% endfor %}
                 </select>
             </div>
