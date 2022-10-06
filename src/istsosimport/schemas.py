@@ -2,7 +2,7 @@ from dataclasses import field
 from marshmallow import fields, post_dump
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field
 
-from istsosimport.db.models import Procedure, ObservedProperty, ProcObs
+from istsosimport.db.models import Import, Procedure, ObservedProperty, ProcObs
 
 
 class ObservedProperySchema(SQLAlchemyAutoSchema):
@@ -29,12 +29,12 @@ class ProcedureSchema(SQLAlchemyAutoSchema):
 
     proc_obs = fields.Nested(ProcObsSchema, many=True)
 
-    # @post_dump(pass_many=True)
-    # def add_missing_time_prop(self, data, **kwargs):
-    #     data["observed_properties"].append(
-    #         {
-    #             "def_opr": "urn:ogc:def:parameter:x-istsos:1.0:time:iso8601",
-    #             "name_opr": "Date format iso 8601",
-    #         }
-    #     )
-    #     return data
+
+class ImportSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Import
+        include_relationships = True
+        include_fk = True
+        load_instance = True
+
+    procedure = fields.Nested(ProcedureSchema, dump_only=True)

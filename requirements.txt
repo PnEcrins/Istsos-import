@@ -12,3 +12,4 @@ pandas
 requests
 celery[redis]==4.4.7
 flask-mail
+flask-migrate

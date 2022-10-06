@@ -10,40 +10,29 @@
       enctype = "multipart/form-data">
       <div class="mb-3">
          <label for="service" class="form-label">Service</label>
-         <select 
-            v-model="currentService" 
-            v-on:change="fetchProcedure" 
-            class="form-select" 
-            name="service" 
-            id="proc" 
-            required
-         >
-            <option  :value="null"> -- Select a service -- </option>
-            {% for service in services %}
-               <option  value="{{service}}"> {{service}} </option>
-            {% endfor %}
-         </select>
       </div>
       <div class="mb-3">
-         <label for="procedure" class="form-label">Procedure</label>
-         <select class="form-select" name="procedure" id="proc" required>
-               <option v-for="procedure in procedures" :value="procedure.id_prc"> ${procedure.name_prc} </option>
+         <label for="id_prc" class="form-label">Procedure</label>
+         <select class="form-select" name="id_prc" id="proc" required>
+               {% for procedure in procedures %}
+                  <option value="{{procedure.id_prc}}"> {{procedure.name_prc}} </option>
+               {% endfor %}
          </select>
       </div>
       <div class="mb-3">
          <input class="form-control" type = "file" name = "file" required/>
       </div>
       <div class="mb-3">
-         <label for="separator">File separator</label>
-         <select class="form-select mb-3" name="separator" id="séparateur" >
+         <label for="delimiter">File separator</label>
+         <select class="form-select mb-3" name="delimiter" id="séparateur" >
                <option value=";"> ;</option>
                <option value=","> ,</option>
                <option value="\t"> tab</option>
          </select>
       </div>
       <div class="mb-3">
-         <label for="mail_recipient">Mail (for import report)</label>
-         <input class="form-control" type="text" name="mail_recipient" required>
+         <label for="email">Mail (for import report)</label>
+         <input class="form-control" type="text" name="email" required>
       </div>
       <button type="submit" class="btn btn-primary">
          Upload
@@ -53,6 +42,6 @@
    </form>  
 </div>
 
-<script type="module" src="{{url_for("static", filename='js/import.js')}}"></script>
+<!-- <script type="module" src="{{url_for("static", filename='js/import.js')}}"></script> -->
 {% endblock %}
 

@@ -1,0 +1,5 @@
+DEBUG=True
+FLASK_DEBUG=true
+FLASK_APP=app.py
+SQLALCHEMY_ECHO=True
+FLASK_ENV=development

@@ -1,26 +1,14 @@
+from datetime import datetime
 import json
 import requests
 
 from sqlalchemy import ForeignKey
 from flask import current_app
-from sqlalchemy import orm
+from sqlalchemy import orm, func
 from werkzeug.exceptions import HTTPException
 
 from istsosimport.env import db
-
-
-# proc_obs = db.Table(
-#     "proc_obs",
-#     db.Column("id_pro", primary_key=True),
-#     db.Column("id_prc_fk", db.Integer, db.ForeignKey("procedures.id_prc")),
-#     db.Column("id_opr_fk", db.Integer, db.ForeignKey("observed_properties.id_opr")),
-#     schema="per_service",
-# )
-
-# class ProcObs(db.Model):
-#     __tablename__ = "proc_obs"
-#     __table_args__ = {"schema": "per_service"}
-#     id_pro = db.Column(db.Integer, primary_key=True)
+from istsosimport.config.config_parser import config
 
 
 class ObservedProperty(db.Model):
@@ -56,6 +44,7 @@ class ProcObs(db.Model):
     observed_property = db.relationship(
         "ObservedProperty",
         primaryjoin="ProcObs.id_opr_fk == ObservedProperty.id_opr",
+        lazy="joined",
     )
 
     def getlastobservation(self, service, offering, serialize_procedure):
@@ -107,23 +96,23 @@ class Measure(db.Model):
     )
     event_time = db.relationship("EventTime", back_populates="measures")
 
-    def __init__(self, **kwargs):
-        super(Measure, self).__init__(**kwargs)
-        self.__set_quality()
-
     #### TODO : quality index coul be at obs property level ...
-    def __set_quality(self):
+    def set_quality(self, proc_obs):
         """
         Set the quality index with the given quality constraint
         If no constraint -> set Measure.DEFAULT_QI
         If valid constraint -> set Measure.VALID_QI
         If invalid constraint -> set Measure.INVALID_QI
+
+        HACK : quality could be set with a Measure object
+        without a loaded proc_obs relationship
+        so it take proc_obs as dict in parameter
         """
-        if not self.proc_obs.constr_pro:
+        if not proc_obs["constr_pro"]:
             self.id_qi_fk = Measure.DEFAULT_QI
         else:
             self.id_qi_fk = Measure.INVALID_QI
-            quality_constainst = json.loads(self.proc_obs.constr_pro)
+            quality_constainst = json.loads(proc_obs["constr_pro"])
             if "min" in quality_constainst:
                 checker = quality_constainst["min"]
                 if self.val_msr >= checker:
@@ -139,3 +128,20 @@ class Measure(db.Model):
             elif "valueList" in quality_constainst:
                 if self.val_msr in quality_constainst["valueList"]:
                     self.id_qi_fk = Measure.VALID_QI
+
+
+class Import(db.Model):
+    __tablename__ = "imports"
+    __table_args__ = {"schema": "public"}
+    id_import = db.Column(db.Integer, primary_key=True)
+    file_name = db.Column(db.Unicode)
+    date_import = db.Column(db.DateTime, server_default=func.now())
+    email = db.Column(db.Unicode)
+    id_prc = db.Column(db.Integer, ForeignKey(Procedure.id_prc))
+    nb_row_total = db.Column(db.Integer)
+    nb_row_inserted = db.Column(db.Integer)
+    error_file = db.Column(db.Unicode)
+    delimiter = db.Column(db.Unicode)
+    service = db.Column(db.Unicode, nullable=False)
+
+    procedure = db.relationship(Procedure, lazy="joined")

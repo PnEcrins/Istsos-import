@@ -1,3 +1,4 @@
+from copy import copy
 import csv
 import datetime
 import logging
@@ -18,10 +19,12 @@ from flask import (
     g,
 )
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import MultiDict
+
 
 from istsosimport.env import db
-from istsosimport.db.models import ObservedProperty, Procedure
-from istsosimport.schemas import ObservedProperySchema, ProcedureSchema
+from istsosimport.db.models import Import, ObservedProperty, Procedure
+from istsosimport.schemas import ImportSchema, ObservedProperySchema, ProcedureSchema
 from istsosimport.config.config_parser import config
 
 from istsosimport.tasks import import_data
@@ -34,47 +37,61 @@ log = logging.getLogger()
 
 @blueprint.route("/", methods=["GET"])
 def home():
-    data = db.session.query(Procedure).all()
-    procedure_schema = ProcedureSchema()
-    for d in data:
-        s = procedure_schema.dump(d)
-    return render_template("home.html")
+    return render_template("home.html", services=config["SOS_SERVICES"])
 
 
-@blueprint.route("/upload", methods=["GET", "POST"])
+@blueprint.route("/<service>/imports", methods=["GET"])
+def imports():
+    params = request.args
+    limit = int(params.get("limit", 100))
+    page = params.get("page", 1, int)
+
+    result = g.session.query(Import).filter_by(service=g.service).limit(limit)
+    import_schema = ImportSchema()
+    imports = [import_schema.dump(imp) for imp in result]
+    return render_template("import-list.html", imports=imports)
+
+
+@blueprint.route("/<service>/upload", methods=["GET", "POST"])
 def upload():
 
     if request.method == "GET":
+        procedures = g.session.query(Procedure).all()
+        schema = ProcedureSchema()
         return render_template(
-            "import.html", services=current_app.config["SOS_SERVICES"]
+            "import.html",
+            services=current_app.config["SOS_SERVICES"],
+            procedures=[schema.dump(p) for p in procedures],
         )
     else:
         f = request.files["file"]
-        data = request.form
-        session["separator"] = data["separator"]
-        session["mail_recipient"] = data["mail_recipient"]
-        id_prc = data.get("procedure")
+        data = MultiDict(request.form)
+        data["service"] = g.service
         filename = secure_filename(f"{datetime.datetime.now()}-{f.filename}")
+        data["file_name"] = filename
+        imp = ImportSchema().load(data=data, session=g.session)
+        g.session.add(imp)
+        g.session.commit()
+        new_id_import = imp.id_import
+        db.session.commit()
         path = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
         f.save(path)
         return redirect(
             url_for(
                 "main.mapping",
-                service=data["service"],
-                id_prc=id_prc,
-                filename=filename,
+                service=g.service,
+                id_import=new_id_import,
             )
         )
 
 
-@blueprint.route("/<service>/mapping/<int:id_prc>/<filename>")
-@blueprint.route(
-    "/<service>/mapping/<int:id_prc>/<filename>/missing_cols/<missing_cols>"
-)
-def mapping(id_prc, filename, missing_cols=[]):
+@blueprint.route("/<service>/mapping/<int:id_import>/")
+@blueprint.route("/<service>/mapping/<int:id_import>/<missing_cols>")
+def mapping(id_import, missing_cols=[]):
+    imp = g.session.query(Import).get(id_import)
     if missing_cols:
         missing_cols = missing_cols.split(",")
-    path = Path(current_app.config["UPLOAD_FOLDER"], filename)
+    path = Path(current_app.config["UPLOAD_FOLDER"], imp.file_name)
     if not path.exists():
         abort(404)
     in_columns_name = []
@@ -83,9 +100,10 @@ def mapping(id_prc, filename, missing_cols=[]):
         for row in csv_reader:
             in_columns_name = row
             break
+    print("LAAAA", in_columns_name)
     observed_properties = g.session.query(ObservedProperty).all()
     observed_property_schema = ObservedProperySchema()
-    procedure = g.session.query(Procedure).get(id_prc)
+    procedure = g.session.query(Procedure).get(imp.id_prc)
     return render_template(
         "mapping.html",
         procedure=ProcedureSchema().dump(procedure),
@@ -93,7 +111,7 @@ def mapping(id_prc, filename, missing_cols=[]):
         observed_properties=[
             observed_property_schema.dump(o) for o in observed_properties
         ],
-        filename=filename,
+        filename=imp.file_name,
         missing_cols=missing_cols,
     )
 
@@ -104,15 +122,10 @@ def load():
     id_prc = int(data.pop("id_prc"))
     filename = data.pop("filename")
 
-    # get last obs to have the structure of a posted data
-    # last_obs = procedure.getlastobservation("ecrins", "temporary", serialize_procedure)
-
     csv_mapping = {}
     # make a correct mapping in a dict between expected column name (observed_prop) and the csv given column names
     for in_col, out_col in data.items():
         csv_mapping[out_col] = in_col
-
-    # reorder the csv columns according to the observed property order
     missing_cols = []
     if missing_cols:
         return redirect(
@@ -123,13 +136,23 @@ def load():
                 missing_cols=",".join(missing_cols),
             )
         )
-    import_data.delay(
+    # import_data.delay(
+    #     id_prc=id_prc,
+    #     filename=filename,
+    #     separator=session.get("separator"),
+    #     config=config,
+    #     csv_mapping=csv_mapping,
+    #     service=g.service,
+    # )
+    import_data(
         id_prc=id_prc,
         filename=filename,
         separator=session.get("separator"),
         config=config,
         csv_mapping=csv_mapping,
+        service=g.service,
     )
+
     return redirect(url_for("main.processing"))
 
 

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css')}}" />
+
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+<script src="{{url_for('static', filename='node_modules/jquery/dist/jquery.min.js')}}"> </script>
+<script src="{{url_for('static', filename='node_modules/datatables.net/js/jquery.dataTables.min.js')}} "> </script>
+<script src="{{url_for('static', filename='node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.js')}} "> </script>
+
+{% endblock %}
+{% block content %}
+<div id="import-list">
+
+    <table id="import-table">
+        <thead>
+            <tr>
+                <th> #</th>
+                <th> Procedure</th>
+                <th> Import date</th>
+                <th>File name</th>
+                <th>Nb row inserted</th>
+                <th>Nb row total</th>
+                <th>#</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for imp in imports %} 
+                <tr>
+                    <td> {{imp.id_import}} </td>
+                    <td> {{imp.procedure.name_prc}} </td>
+                    <td> {{imp.date_import}} </td>
+                    <td> {{imp.file_name}} </td>
+                    <td> {{imp.nb_row_inserted}} </td>
+                    <td> {{imp.nb_row_total}} </td>
+                    <td> {{imp.error_file}} </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+    <a class="btn btn-success" href=" {{url_for('main.upload', service=g.service)}} "> New import</a>
+
+</div>
+
+<script type="module" src="{{url_for("static", filename='js/import-list.js')}}"></script>
+
+{% endblock %}
