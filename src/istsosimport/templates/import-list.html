@@ -25,19 +25,6 @@
                 <th>#</th>
             </tr>
         </thead>
-        <tbody>
-            {% for imp in imports %} 
-                <tr>
-                    <td> {{imp.id_import}} </td>
-                    <td> {{imp.procedure.name_prc}} </td>
-                    <td> {{imp.date_import}} </td>
-                    <td> {{imp.file_name}} </td>
-                    <td> {{imp.nb_row_inserted}} </td>
-                    <td> {{imp.nb_row_total}} </td>
-                    <td> {{imp.error_file}} </td>
-                </tr>
-            {% endfor %}
-        </tbody>
 
     </table>
 
@@ -45,6 +32,10 @@
 
 </div>
 
+<script>
+    var service = "{{g.service}}"
+    var api_imports = "{{url_for('api.imports')}}"
+</script>
 <script type="module" src="{{url_for("static", filename='js/import-list.js')}}"></script>
 
 {% endblock %}

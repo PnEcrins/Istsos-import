@@ -42,14 +42,7 @@ def home():
 
 @blueprint.route("/<service>/imports", methods=["GET"])
 def imports():
-    params = request.args
-    limit = int(params.get("limit", 100))
-    page = params.get("page", 1, int)
-
-    result = g.session.query(Import).filter_by(service=g.service).limit(limit)
-    import_schema = ImportSchema()
-    imports = [import_schema.dump(imp) for imp in result]
-    return render_template("import-list.html", imports=imports)
+    return render_template("import-list.html")
 
 
 @blueprint.route("/<service>/upload", methods=["GET", "POST"])
