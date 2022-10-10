@@ -9,16 +9,15 @@ import pandas as pd
 import requests as req
 import isodate
 
-from flask import render_template, g
-from sqlalchemy import exc
-from sqlalchemy.orm import Session, joinedload
+from flask import render_template
+from sqlalchemy import exc, update
 from istsosimport.schemas import ProcedureSchema
 
 
 from istsosimport.utils.celery import celery_app
 from istsosimport.utils.mail import send_mail
 from istsosimport.env import FILE_ERROR_DIRECTORY, db
-from istsosimport.db.models import EventTime, Measure, ProcObs, Procedure
+from istsosimport.db.models import EventTime, Import, Measure, ProcObs, Procedure
 from istsosimport.db.utils import get_schema_session
 
 
@@ -26,15 +25,11 @@ log = logging.getLogger()
 
 
 @celery_app.task(bind=True)
-def import_data(self, id_prc, filename, separator, config, csv_mapping, service):
-    session = get_schema_session(service)
-    procedure = session.query(Procedure).get(id_prc)
-    file_eror_name = FILE_ERROR_DIRECTORY / str(
-        procedure.name_prc + "_" + str(datetime.now())
-    )
-    procedure_dict = ProcedureSchema().dump(procedure)
+def import_data(self, import_dict, filename, separator, config, csv_mapping, service):
+    procedure_dict = import_dict["procedure"]
+    file_eror_name = str(procedure_dict["name_prc"] + "_" + str(datetime.now()))
 
-    file_error = open(file_eror_name, "w")
+    file_error = open(str(FILE_ERROR_DIRECTORY / file_eror_name), "w")
     with open(os.path.join(config["UPLOAD_FOLDER"], filename)) as csvfile:
         csvreader = csv.DictReader(csvfile, delimiter=separator)
         csv_writer = csv.DictWriter(
@@ -81,6 +76,18 @@ def import_data(self, id_prc, filename, separator, config, csv_mapping, service)
             number_imported=total_succeed,
             total_row=total_rows,
             error_message=error_message,
-            file_error=file_eror_name,
+            file_error=str(FILE_ERROR_DIRECTORY / file_eror_name),
         )
-    send_mail("theo.lechemia@ecrins-parcnational.fr", "recap", template)
+    with get_schema_session(service) as session:
+        session.execute(
+            update(Import)
+            .where(Import.id_import == import_dict["id_import"])
+            .values(
+                nb_row_total=total_rows,
+                nb_row_inserted=total_succeed,
+                error_file=file_eror_name,
+            )
+        )
+        session.commit()
+
+    send_mail(import_dict["email"], "Import IstSOS", template)

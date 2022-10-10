@@ -135,8 +135,9 @@ def load(id_import):
                 missing_cols=",".join(missing_cols),
             )
         )
-    import_data(
-        id_prc=imp.id_prc,
+
+    import_data.delay(
+        import_dict=ImportSchema().dump(imp),
         filename=imp.file_name,
         separator=session.get("separator"),
         config=config,
