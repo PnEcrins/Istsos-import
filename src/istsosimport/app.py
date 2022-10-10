@@ -25,8 +25,13 @@ def create_app():
     ma.init_app(app)
     migrate.init_app(app, db)
     celery_app.conf.update(app.config["CELERY"])
-    # set from headers HTTP_HOST, SERVER_NAME, and SERVER_PORT
-    # app.config["SERVER_NAME"] = "127.0.0.1:5000"
+
+    # flask admin
+    app.config["FLASK_ADMIN_SWATCH"] = "simplex"
+    app.config["FLASK_ADMIN_FLUID_LAYOUT"] = True
+    from istsosimport.admin import admin
+
+    admin.init_app(app)
 
     app.wsgi_app = ProxyFix(app.wsgi_app, x_host=1)
     from istsosimport.routes.main import blueprint
@@ -35,23 +40,5 @@ def create_app():
     from istsosimport.routes.api import blueprint
 
     app.register_blueprint(blueprint)
-
-    @app.url_defaults
-    def add_service(endpoint, values):
-        if "service" in values:
-            return
-        if app.url_map.is_endpoint_expecting(endpoint, "service"):
-            values["service"] = g.service
-
-    # set the database schema for all session requests from the service mentionned in the URL
-    @app.url_value_preprocessor
-    def pull_service(endpoint, values):
-        if values and "service" in values:
-            g.service = values.pop("service", None)
-            conn = db.session.connection().execution_options(
-                schema_translate_map={"per_service": g.service}
-            )
-
-            g.session = Session(bind=conn)
 
     return app

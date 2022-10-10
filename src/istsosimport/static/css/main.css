@@ -1,23 +1,16 @@
-/* .center {
-    margin-left: 10%;
-} */
-
-body {
-    background-color: #dce0e4
+body>.container-fluid {
+    padding-right: 0px;;
+    padding-left: 0px;;
 }
 
-.container {
-    background-color: white;
+.body-container, #app-nav {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
 }
 
-nav {
-    height: 5vh;
-}
-
-#content-wrapper {
-    height: 93vh;
-}
-
-#content {
-    margin-top: 2vh
+.navbar a {
+    font-size: medium!important;
 }

@@ -1,0 +1,27 @@
+{% extends 'admin/model/list.html' %}
+
+{% block head_css %}
+    {{super()}}
+<link rel="stylesheet" href={{url_for("static", filename="css/main.css")}} />
+{% endblock %}
+
+
+{% block brand %}
+<div class="collapse navbar-collapse" id="admin-navbar-collapse">
+    <a class="navbar-brand" href="{{url_for('import.edit_view')}} ">Istsos-Import</a>
+</div>
+{% endblock %}
+
+{% block main_menu %}
+
+{% endblock %}
+
+
+
+{% block body %}
+<div class="body-container">
+    <h1>Import list</h1>
+    {{ super() }}
+    <a class="btn btn-success" href=" {{url_for('main.upload')}} "> New import</a>
+</div>
+{% endblock %}

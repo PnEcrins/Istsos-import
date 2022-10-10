@@ -35,36 +35,31 @@ blueprint = Blueprint("main", __name__)
 log = logging.getLogger()
 
 
-@blueprint.route("/", methods=["GET"])
-def home():
-    return render_template("home.html", services=config["SOS_SERVICES"])
-
-
 @blueprint.route("/<service>/imports", methods=["GET"])
 def imports():
     return render_template("import-list.html")
 
 
-@blueprint.route("/<service>/upload", methods=["GET", "POST"])
+@blueprint.route("/upload", methods=["GET", "POST"])
 def upload():
 
     if request.method == "GET":
-        procedures = g.session.query(Procedure).all()
+        procedures = db.session.query(Procedure).all()
         schema = ProcedureSchema()
         return render_template(
-            "import.html",
+            "upload.html",
             services=current_app.config["SOS_SERVICES"],
             procedures=[schema.dump(p) for p in procedures],
         )
     else:
         f = request.files["file"]
         data = MultiDict(request.form)
-        data["service"] = g.service
+        data["service"] = config["SERVICE"]
         filename = secure_filename(f"{datetime.datetime.now()}-{f.filename}")
         data["file_name"] = filename
-        imp = ImportSchema().load(data=data, session=g.session)
-        g.session.add(imp)
-        g.session.commit()
+        imp = ImportSchema().load(data=data, session=db.session)
+        db.session.add(imp)
+        db.session.commit()
         new_id_import = imp.id_import
         db.session.commit()
         path = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
@@ -72,17 +67,17 @@ def upload():
         return redirect(
             url_for(
                 "main.mapping",
-                service=g.service,
+                service=config["SERVICE"],
                 id_import=new_id_import,
             )
         )
 
 
-@blueprint.route("/<service>/mapping/<int:id_import>/")
-@blueprint.route("/<service>/mapping/<int:id_import>/<missing_cols>")
+@blueprint.route("/mapping/<int:id_import>/")
+@blueprint.route("/mapping/<int:id_import>/<missing_cols>")
 def mapping(id_import, missing_cols=[]):
     imp_schema = ImportSchema()
-    imp = g.session.query(Import).get(id_import)
+    imp = db.session.query(Import).get(id_import)
     import_as_dict = imp_schema.dump(imp)
     if missing_cols:
         missing_cols = missing_cols.split(",")
@@ -104,10 +99,10 @@ def mapping(id_import, missing_cols=[]):
     )
 
 
-@blueprint.route("/<service>/<int:id_import>/load", methods=["POST"])
+@blueprint.route("/<int:id_import>/load", methods=["POST"])
 def load(id_import):
     data = request.form.to_dict()
-    imp = g.session.query(Import).get(id_import)
+    imp = db.session.query(Import).get(id_import)
     csv_mapping = {}
     missing_cols = []
     # make a correct mapping in a dict between expected column name (observed_prop) and the csv given column names
@@ -123,7 +118,7 @@ def load(id_import):
         return redirect(
             url_for(
                 "main.mapping",
-                service=g.service,
+                service=config["SERVICE"],
                 id_import=id_import,
                 missing_cols=",".join(missing_cols),
             )
@@ -135,7 +130,7 @@ def load(id_import):
         separator=session.get("separator"),
         config=config,
         csv_mapping=csv_mapping,
-        service=g.service,
+        service=config["SERVICE"],
     )
 
     return redirect(url_for("main.processing"))

@@ -13,7 +13,7 @@ from istsosimport.config.config_parser import config
 
 class ObservedProperty(db.Model):
     __tablename__ = "observed_properties"
-    __table_args__ = {"schema": "per_service"}
+    __table_args__ = {"schema": config["SERVICE"]}
     id_opr = db.Column(db.Integer, primary_key=True)
     name_opr = db.Column(db.Unicode)
     def_opr = db.Column(db.Unicode)
@@ -23,7 +23,7 @@ class ObservedProperty(db.Model):
 
 class Procedure(db.Model):
     __tablename__ = "procedures"
-    __table_args__ = {"schema": "per_service"}
+    __table_args__ = {"schema": config["SERVICE"]}
     id_prc = db.Column(db.Integer, primary_key=True)
     assignedid_prc = db.Column(db.Unicode)
     name_prc = db.Column(db.Unicode)
@@ -33,10 +33,13 @@ class Procedure(db.Model):
         lazy="joined",
     )
 
+    def __repr__(self) -> str:
+        return self.name_prc
+
 
 class ProcObs(db.Model):
     __tablename__ = "proc_obs"
-    __table_args__ = {"schema": "per_service"}
+    __table_args__ = {"schema": config["SERVICE"]}
     id_pro = db.Column(db.Integer, primary_key=True)
     id_opr_fk = db.Column(db.Integer, db.ForeignKey(ObservedProperty.id_opr))
     constr_pro = db.Column(db.Unicode)
@@ -68,7 +71,7 @@ class ProcObs(db.Model):
 
 class EventTime(db.Model):
     __tablename__ = "event_time"
-    __table_args__ = {"schema": "per_service"}
+    __table_args__ = {"schema": config["SERVICE"]}
     id_eti = db.Column(db.Integer, primary_key=True)
     id_prc_fk = db.Column(db.Integer, db.ForeignKey(Procedure.id_prc))
     time_eti = db.Column(db.DateTime)
@@ -81,7 +84,7 @@ class EventTime(db.Model):
 
 class Measure(db.Model):
     __tablename__ = "measures"
-    __table_args__ = {"schema": "per_service"}
+    __table_args__ = {"schema": config["SERVICE"]}
     VALID_QI = 200
     INVALID_QI = 0
     DEFAULT_QI = 100

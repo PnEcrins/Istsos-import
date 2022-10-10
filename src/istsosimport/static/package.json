@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^5.2.0",
+    "bootstrap-icons": "^1.9.1",
+    "bootswatch": "^5.2.1",
     "datatables.net-bs5": "^1.12.1",
     "jquery": "^3.6.1",
     "petite-vue": "^0.4.1"
