@@ -1,23 +1,18 @@
-from contextlib import ExitStack
 import csv
-from datetime import date, datetime
+from datetime import datetime
 import os
-import json
 import logging
 
-import pandas as pd
-import requests as req
 import isodate
 
-from flask import render_template
+from flask import render_template, url_for
 from sqlalchemy import exc, update
-from istsosimport.schemas import ProcedureSchema
 
 
 from istsosimport.utils.celery import celery_app
 from istsosimport.utils.mail import send_mail
 from istsosimport.env import FILE_ERROR_DIRECTORY, db
-from istsosimport.db.models import EventTime, Import, Measure, ProcObs, Procedure
+from istsosimport.db.models import EventTime, Import, Measure
 from istsosimport.db.utils import get_schema_session
 
 
@@ -27,7 +22,9 @@ log = logging.getLogger()
 @celery_app.task(bind=True)
 def import_data(self, import_dict, filename, separator, config, csv_mapping, service):
     procedure_dict = import_dict["procedure"]
-    file_eror_name = str(procedure_dict["name_prc"] + "_" + str(datetime.now()))
+    file_eror_name = str(
+        procedure_dict["name_prc"] + "_" + str(datetime.now()) + ".csv"
+    )
 
     file_error = open(str(FILE_ERROR_DIRECTORY / file_eror_name), "w")
     with open(os.path.join(config["UPLOAD_FOLDER"], filename)) as csvfile:
@@ -35,6 +32,7 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
         csv_writer = csv.DictWriter(
             file_error, delimiter=separator, fieldnames=csvreader.fieldnames
         )
+        csv_writer.writeheader()
         total_succeed = 0
         total_rows = 0
         error_message = []
@@ -70,14 +68,9 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                     csv_writer.writerow(row)
 
         file_error.close()
-        template = render_template(
-            "mail_template.html",
-            procedure=procedure_dict,
-            number_imported=total_succeed,
-            total_row=total_rows,
-            error_message=error_message,
-            file_error=str(FILE_ERROR_DIRECTORY / file_eror_name),
-        )
+
+        print(import_dict)
+
     with get_schema_session(service) as session:
         session.execute(
             update(Import)
@@ -89,5 +82,11 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
             )
         )
         session.commit()
+    template = render_template(
+        "mail_template.html",
+        import_dict=import_dict,
+        error_message=error_message,
+        file_error=url_for("static", filename="error_files/" + file_eror_name),
+    )
 
     send_mail(import_dict["email"], "Import IstSOS", template)

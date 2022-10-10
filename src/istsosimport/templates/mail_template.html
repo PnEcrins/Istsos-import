@@ -1,7 +1,7 @@
 <p>
-    Import of procedure {{procedure.name_prc}} is finished.
+    Import of procedure {{import_dict.procedure.name_prc}} is finished.
 
-    It successfully import {{number_imported}}/{{total_row}} row(s)
+    It successfully import {{import_dict.nb_row_inserted}}/{{import_dict.nb_row_total}} row(s)
 </p>
 <p>
 
@@ -11,7 +11,7 @@
         Number of errors : {{error_message|length}} <br>
 
         You can download the data in error  
-        <a href="{{base_url}}/static/error_files/{{file_error}}"> here  </a>
+        <a href="{{file_error|safe}}"> here  </a>
     </p>
     <h5> Error trace : </h5>
     <small>
