@@ -22,7 +22,8 @@ def get_procedures():
 @blueprint.route("/imports", methods=["GET"])
 def imports():
     params = request.args
-    limit = params.get("limit", 10, int)
+    print(params)
+    limit = params.get("length", 10, int)
     start = params.get("start", 1, int)
     result = (
         g.session.query(Import).filter_by(service=g.service).limit(limit).offset(start)
