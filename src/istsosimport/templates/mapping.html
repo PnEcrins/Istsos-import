@@ -17,16 +17,17 @@
     </div>
     {% endif %}
     <div class="row">
-        <div class="col-2"><h5> Observed properties</h5> </div>
-        <div class="col-10"> <h5> File columns</h5> </div>
+        <div class="col-3"><h3> Observed properties</h3> </div>
+        <div class="col-8"> <h3> File columns</h3> </div>
+        <hr>
     </div>
     <div class="row">
-        <div class="mb-3 col-2">
+        <div class="mb-3 col-3">
             Date
         </div>
-        <div class="mb-3 col-2">
+        <div class="mb-3 col-8">
             <select class="form-select" name="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601" required>
-                <option value="null"> --</option>
+                <option value="nSull"> --</option>
                 {% for name in in_columns_name %}
                 <option value="{{name}}"> {{name}} </option>
                 {% endfor %}
@@ -35,10 +36,10 @@
     </div>
        {% for proc_obs in procedure.proc_obs%}
         <div class="row">
-            <div class="mb-3 col-2">
+            <div class="mb-3 col-3">
                 {{proc_obs.observed_property.name_opr}}
             </div>
-            <div class="mb-3 col-10">
+            <div class="mb-3 col-8">
                 <select class="form-select" name="{{proc_obs.observed_property.def_opr}}" required>
                     <option value="null"> --</option>
                     {% for name in in_columns_name %}
@@ -49,7 +50,7 @@
         </div>
         {% endfor %}
 
-        <button type="submit" class="btn btn-primary ">
+        <button class="btn btn-success" type="submit" class="btn btn-primary ">
             Send data
          </button>
    </form>  
