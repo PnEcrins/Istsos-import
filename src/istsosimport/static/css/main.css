@@ -14,3 +14,7 @@ body>.container-fluid {
 .navbar a {
     font-size: medium!important;
 }
+
+.col-error_file {
+    text-align: center;
+}

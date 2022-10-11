@@ -54,9 +54,9 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                 measure = Measure(val_msr=floated_value, id_pro_fk=proc["id_pro"])
                 measure.set_quality(proc)
                 eventtime.measures.append(measure)
-                db.sesison.add(eventtime)
+                db.session.add(eventtime)
             try:
-                db.sesison.commit()
+                db.session.commit()
                 total_succeed = total_succeed + 1
             except exc.SQLAlchemyError as e:
                 log.error(e)
@@ -64,8 +64,6 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                 csv_writer.writerow(row)
 
         file_error.close()
-
-        print(import_dict)
 
     db.session.execute(
         update(Import)
@@ -80,6 +78,8 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
     template = render_template(
         "mail_template.html",
         import_dict=import_dict,
+        nb_row_total=total_rows,
+        nb_row_inserted=total_succeed,
         error_message=error_message,
         file_error=url_for("static", filename="error_files/" + file_eror_name),
     )
