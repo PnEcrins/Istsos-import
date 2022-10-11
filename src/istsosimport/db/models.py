@@ -1,11 +1,7 @@
-from datetime import datetime
 import json
-import requests
 
 from sqlalchemy import ForeignKey
-from flask import current_app
-from sqlalchemy import orm, func
-from werkzeug.exceptions import HTTPException
+from sqlalchemy import func
 
 from istsosimport.env import db
 from istsosimport.config.config_parser import config
@@ -66,10 +62,6 @@ class EventTime(db.Model):
 class Measure(db.Model):
     __tablename__ = "measures"
     __table_args__ = {"schema": config["SERVICE"]}
-    INVALID_QI = 0
-    DEFAULT_QI = 100
-    VALID_PROPERTY_QI = 200
-    VALID_STATION_QI = 210
 
     id_msr = db.Column(db.Integer, primary_key=True)
     id_eti_fk = db.Column(db.Integer, db.ForeignKey(EventTime.id_eti))
@@ -98,27 +90,25 @@ class Measure(db.Model):
             not proc_obs["constr_pro"]
             or not proc_obs["observed_property"]["constr_opr"]
         ):
-            self.id_qi_fk = Measure.DEFAULT_QI
+            self.id_qi_fk = config["DATA_QI"]["DEFAULT_QI"]
 
         # if at least on check, check as invalid before tests
         else:
-            self.id_qi_fk = Measure.INVALID_QI
+            self.id_qi_fk = config["DATA_QI"]["INVALID_QI"]
+            return
 
         # first check at property level
-        print("SET QI FOR PROPERY")
         self._set_qi(
             quality_constainst=json.loads(proc_obs["observed_property"]["constr_opr"]),
-            valid_qi_constant=Measure.VALID_PROPERTY_QI,
+            valid_qi_constant=config["DATA_QI"]["VALID_PROPERTY_QI"],
         )
-        print("SET QI FOR STATION")
         # check at station level
         self._set_qi(
             quality_constainst=json.loads(proc_obs["constr_pro"]),
-            valid_qi_constant=Measure.VALID_STATION_QI,
+            valid_qi_constant=config["DATA_QI"]["VALID_STATION_QI"],
         )
 
     def _set_qi(self, quality_constainst, valid_qi_constant):
-        print("#######", quality_constainst)
         if "min" in quality_constainst:
             checker = float(quality_constainst["min"])
             if self.val_msr >= checker:

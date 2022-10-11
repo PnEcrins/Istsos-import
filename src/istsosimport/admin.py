@@ -69,7 +69,7 @@ class ImportView(ModelView):
     ]
 
     def _file_error_formater(view, context, model, name):
-        if model.error_file:
+        if model.nb_row_total > model.nb_row_inserted:
             url = url_for("static", filename="error_files/" + model.error_file)
             markupstring = f"<a href='{url}'> <i class='bi bi-download'></i> </a>"
             return Markup(markupstring)

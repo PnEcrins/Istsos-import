@@ -18,3 +18,9 @@ SOS_SERVICES = ["my service 1", "myservice 2"]
     MAIL_PASSWORD = 'pass'
     MAIL_ASCII_ATTACHMENTS = false
     MAIL_DEFAULT_SENDER = '<noreply>@email.fr'
+
+[DATA_QI]
+    INVALID_QI = 0
+    DEFAULT_QI = 100
+    VALID_PROPERTY_QI = 200
+    VALID_STATION_QI = 210

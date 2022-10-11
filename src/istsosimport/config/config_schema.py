@@ -27,6 +27,13 @@ class MailConfig(Schema):
     MAIL_ASCII_ATTACHMENTS = fields.Boolean()
 
 
+class DataQI(Schema):
+    INVALID_QI = fields.String(load_default=0)
+    DEFAULT_QI = fields.String(load_default=100)
+    VALID_PROPERTY_QI = fields.String(load_default=200)
+    VALID_STATION_QI = fields.String(load_default=210)
+
+
 class Config(Schema):
     SQLALCHEMY_DATABASE_URI = fields.String(
         required=True,
@@ -45,3 +52,4 @@ class Config(Schema):
     UPLOAD_FOLDER = fields.String(load_default=str(ROOT_DIR / "uploaded_files"))
     SOS_SERVICES = fields.List(fields.String, required=True)
     SERVER_NAME = fields.String(required=True)
+    DATA_QI = fields.Nested(DataQI)
