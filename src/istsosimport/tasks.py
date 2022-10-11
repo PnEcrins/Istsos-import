@@ -37,51 +37,46 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
         total_rows = 0
         error_message = []
         for row in csvreader:
-            with get_schema_session(service) as current_session:
-                total_rows = total_rows + 1
-                date_col = csv_mapping[
-                    "urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"
-                ]
-                eventtime = EventTime(
-                    id_prc_fk=procedure_dict["id_prc"],
-                    time_eti=isodate.parse_datetime(row[date_col]),
-                )
-                for proc in procedure_dict["proc_obs"]:
-                    val_col = csv_mapping[proc["observed_property"]["def_opr"]]
-                    try:
-                        floated_value = float(row[val_col])
-                    except Exception as e:
-                        error_message.append(e)
-                        csv_writer.writerow(row)
-                        continue
-                    measure = Measure(val_msr=floated_value, id_pro_fk=proc["id_pro"])
-                    measure.set_quality(proc)
-                    eventtime.measures.append(measure)
-                    current_session.add(eventtime)
+            total_rows = total_rows + 1
+            date_col = csv_mapping["urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"]
+            eventtime = EventTime(
+                id_prc_fk=procedure_dict["id_prc"],
+                time_eti=isodate.parse_datetime(row[date_col]),
+            )
+            for proc in procedure_dict["proc_obs"]:
+                val_col = csv_mapping[proc["observed_property"]["def_opr"]]
                 try:
-                    current_session.commit()
-                    db.session.commit()
-                    total_succeed = total_succeed + 1
-                except exc.SQLAlchemyError as e:
-                    log.error(e)
+                    floated_value = float(row[val_col])
+                except Exception as e:
                     error_message.append(e)
                     csv_writer.writerow(row)
+                    continue
+                measure = Measure(val_msr=floated_value, id_pro_fk=proc["id_pro"])
+                measure.set_quality(proc)
+                eventtime.measures.append(measure)
+                db.sesison.add(eventtime)
+            try:
+                db.sesison.commit()
+                total_succeed = total_succeed + 1
+            except exc.SQLAlchemyError as e:
+                log.error(e)
+                error_message.append(e)
+                csv_writer.writerow(row)
 
         file_error.close()
 
         print(import_dict)
 
-    with get_schema_session(service) as session:
-        session.execute(
-            update(Import)
-            .where(Import.id_import == import_dict["id_import"])
-            .values(
-                nb_row_total=total_rows,
-                nb_row_inserted=total_succeed,
-                error_file=file_eror_name,
-            )
+    db.session.execute(
+        update(Import)
+        .where(Import.id_import == import_dict["id_import"])
+        .values(
+            nb_row_total=total_rows,
+            nb_row_inserted=total_succeed,
+            error_file=file_eror_name,
         )
-        session.commit()
+    )
+    db.session.commit()
     template = render_template(
         "mail_template.html",
         import_dict=import_dict,
