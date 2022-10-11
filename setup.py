@@ -6,6 +6,7 @@ setuptools.setup(
     maintainer="Parcs national des Écrins",
     python_requires=">=3.6",
     packages=setuptools.find_packages(where="src", include=["istsos*"]),
+    install_requires=list(open("requirements.txt", "r")),
     package_dir={
         "": "src",
     },
