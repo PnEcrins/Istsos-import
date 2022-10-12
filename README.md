@@ -26,6 +26,15 @@ Do not do this command if you already have a istosos-import instance for an othe
     cd src/istsosimport
     flask db upgrade
 
+### Prod deployment
+
+    sudo cp istsosimport.service /etc/systemd/system
+    # Replace <APP_DIRECTORY> by the directory where the app is located (/opt/istsos-import for exemple)
+    sudo mkdir /var/log/istsosimport
+    sudo chown $USER: /var/log/istsosimport/
+    sudo systemctl daemon-reload
+    sudo systemctl enable istsosimport
+
 # Run in dev
 
 Run flask app and celery app in two separate terminals

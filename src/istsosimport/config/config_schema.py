@@ -28,10 +28,10 @@ class MailConfig(Schema):
 
 
 class DataQI(Schema):
-    INVALID_QI = fields.String(load_default=0)
-    DEFAULT_QI = fields.String(load_default=100)
-    VALID_PROPERTY_QI = fields.String(load_default=200)
-    VALID_STATION_QI = fields.String(load_default=210)
+    INVALID_QI = fields.Integer(load_default=0)
+    DEFAULT_QI = fields.Integer(load_default=100)
+    VALID_PROPERTY_QI = fields.Integer(load_default=200)
+    VALID_STATION_QI = fields.Integer(load_default=210)
 
 
 class Config(Schema):
@@ -43,13 +43,11 @@ class Config(Schema):
         ),
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = fields.Boolean(load_default=True)
-    ISTSOS_API_URL = fields.String(required=True)
     LOG_LEVEL = fields.String(load_default=20)
     SERVICE = fields.String(required=True)
     SECRET_KEY = fields.String(required=True)
     CELERY = fields.Nested(CeleryConfig)
     MAIL_CONFIG = fields.Nested(MailConfig)
     UPLOAD_FOLDER = fields.String(load_default=str(ROOT_DIR / "uploaded_files"))
-    SOS_SERVICES = fields.List(fields.String, required=True)
-    SERVER_NAME = fields.String(required=True)
-    DATA_QI = fields.Nested(DataQI)
+    SERVER_NAME = fields.String(load_default="127.0.0.1:8001")
+    DATA_QI = fields.Nested(DataQI, load_default=DataQI().load({}))
