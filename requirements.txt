@@ -26,7 +26,6 @@ importlib-metadata==4.12.0
 importlib-resources==5.9.0
 ipython==8.4.0
 isodate==0.6.1
--e git+git@github.com:PnEcrins/Istsos-import.git@4d5870eeb9fc88fcd6b011fbefdc08fadf73015e#egg=istsos_import
 itsdangerous==2.1.2
 jedi==0.18.1
 Jinja2==3.1.2

@@ -12,6 +12,7 @@
 
 ### Create a python virtualenv and install dependencies
 
+    cd Istsos-import
     sudo pip3 install virtualenv
     virtualenv -p /usr/bin/python3 venv
     source venv/bin/activate
@@ -29,7 +30,7 @@ Do not do this command if you already have a istosos-import instance for an othe
 ### Prod deployment
 
     sudo cp istsosimport.service /etc/systemd/system
-    # Replace <APP_DIRECTORY> by the directory where the app is located (/opt/istsos-import for exemple)
+    # Replace <APP_DIRECTORY> by the directory where the app is located (/opt/istsos-import for exemple) and $USER by your current linux user
     sudo mkdir /var/log/istsosimport
     sudo chown $USER: /var/log/istsosimport/
     sudo systemctl daemon-reload
