@@ -8,7 +8,7 @@
 
 ### Install system requirements:
 
-    apt install python3-pip redis
+    apt install python3-pip redis libpq-dev
 
 ### Create a python virtualenv and install dependencies
 
