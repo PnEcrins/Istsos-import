@@ -13,3 +13,5 @@ flask-mail
 flask-migrate
 flask-admin
 gunicorn
+isodate
+importlib-metadata==4.13.0;python_version < '3.8'
