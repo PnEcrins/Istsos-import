@@ -48,7 +48,6 @@ def upload():
         schema = ProcedureSchema()
         return render_template(
             "upload.html",
-            services=current_app.config["SOS_SERVICES"],
             procedures=[schema.dump(p) for p in procedures],
         )
     else:

@@ -8,7 +8,7 @@ SERVER_NAME = "127.0.0.1:8001"
     result_backend = "redis://localhost:6379/0"
 
 [MAIL_CONFIG]
-    MAIL_SERVER = 'mail.espaces-naturels.fr'
+    MAIL_SERVER = 'my_server.org'
     MAIL_PORT = 465
     MAIL_USE_TLS = false
     MAIL_USE_SSL = true
