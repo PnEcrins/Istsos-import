@@ -34,12 +34,21 @@ Do not do this command if you already have a istosos-import instance for an othe
 
 ### Prod deployment
 
+##### Create a systemd service
+
     sudo cp istsosimport.service /etc/systemd/system
     # Replace <APP_DIRECTORY> by the directory where the app is located (/opt/istsos-import for exemple) and $USER by your current linux user
     sudo mkdir /var/log/istsosimport
     sudo chown $USER: /var/log/istsosimport/
     sudo systemctl daemon-reload
     sudo systemctl enable istsosimport
+    sudo systemctl start istsosimport
+
+##### Make a apache conf
+
+    sudo cp istsosimport.conf /etc/apache2/sites-available/
+    sudo a2enmod proxy
+    sudo a2ensite istsosimport.conf
 
 # Run in dev
 
