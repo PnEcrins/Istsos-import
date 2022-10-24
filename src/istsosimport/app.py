@@ -16,14 +16,14 @@ log = logging.getLogger()
 
 def create_app():
     app = Flask(__name__)
+    conf = config.copy()
+    conf.update(config["MAIL_CONFIG"])
+    app.config.update(conf)
     url_app = urlparse(config["URL_APPLICATION"])
     app.config["APPLICATION_ROOT"] = url_app.path
     app.config["PREFERRED_URL_SCHEME"] = url_app.scheme
     if "SCRIPT_NAME" not in os.environ:
         os.environ["SCRIPT_NAME"] = app.config["APPLICATION_ROOT"].rstrip("/")
-    conf = config.copy()
-    conf.update(config["MAIL_CONFIG"])
-    app.config.update(conf)
     config_loggers(conf)
     app.config["UPLOAD_FOLDER"] = ROOT_DIR / "uploaded_files"
 
