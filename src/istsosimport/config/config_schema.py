@@ -49,5 +49,5 @@ class Config(Schema):
     CELERY = fields.Nested(CeleryConfig)
     MAIL_CONFIG = fields.Nested(MailConfig)
     UPLOAD_FOLDER = fields.String(load_default=str(ROOT_DIR / "uploaded_files"))
-    SERVER_NAME = fields.String(load_default="127.0.0.1:8001")
     DATA_QI = fields.Nested(DataQI, load_default=DataQI().load({}))
+    URL_APPLICATION = fields.String(required=True)

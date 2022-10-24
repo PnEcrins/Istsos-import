@@ -1,5 +1,7 @@
 import logging
+import os
 
+from urllib.parse import urlparse
 from flask import Flask, g
 from sqlalchemy.orm import Session
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -14,6 +16,11 @@ log = logging.getLogger()
 
 def create_app():
     app = Flask(__name__)
+    url_app = urlparse(config["URL_APPLICATION"])
+    app.config["APPLICATION_ROOT"] = url_app.path
+    app.config["PREFERRED_URL_SCHEME"] = url_app.scheme
+    if "SCRIPT_NAME" not in os.environ:
+        os.environ["SCRIPT_NAME"] = app.config["APPLICATION_ROOT"].rstrip("/")
     conf = config.copy()
     conf.update(config["MAIL_CONFIG"])
     app.config.update(conf)

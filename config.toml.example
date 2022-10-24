@@ -1,7 +1,7 @@
 SQLALCHEMY_DATABASE_URI = "postgresql://monuser:monpassachanger@localhost:5432/istsos"
 SERVICE = 'ecrins'
 SECRET_KEY = "supersecretkey"
-SERVER_NAME = "127.0.0.1:8001"
+URL_APPLICATION = "http://127.0.0.1:8001"
 
 [CELERY]
     broker_url = "redis://localhost:6379/0"
