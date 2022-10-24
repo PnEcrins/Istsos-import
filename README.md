@@ -20,6 +20,11 @@
 
 ### Config file
 
+Copy and edit the config file
+
+    cp config.toml.example config.toml
+    nano config.toml
+
 ### Install database
 
 Do not do this command if you already have a istosos-import instance for an other service
