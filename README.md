@@ -41,7 +41,7 @@ Do not do this command if you already have a istosos-import instance for an othe
     sudo mkdir /var/log/istsosimport
     sudo chown $USER: /var/log/istsosimport/
     sudo systemctl daemon-reload
-    sudo systemctl enable istsosimport
+    sudo systemctl enable istsosimports
     sudo systemctl start istsosimport
 
 ##### Make a apache conf
@@ -49,10 +49,20 @@ Do not do this command if you already have a istosos-import instance for an othe
     sudo cp istsosimport.conf /etc/apache2/sites-available/
     sudo a2enmod proxy
     sudo a2ensite istsosimport.conf
+    sudo systemctl reload apache2
 
 # Run in dev
+
+In order to send mail, Flask has to know the "SERVER_NAME". In dev we use IP but we don't have a domain. Add those line in your `/etc/hosts`
+
+::
+127.0.0.1 istsosimport.local
+
+In config.toml set the `URL_APPLICATION` like this : `URL_APPLICATION = "http://istsosimport.local:<PORT>/"` where the port is the port on which Flask run
 
 Run flask app and celery app in two separate terminals
 
     flask run
     celery -A istsosimport.celery_app worker -l INFO
+
+The app is available on `http://istsosimport.local:<PORT>`
