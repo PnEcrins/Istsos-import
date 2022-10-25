@@ -1,7 +1,7 @@
 SQLALCHEMY_DATABASE_URI = "postgresql://monuser:monpassachanger@localhost:5432/istsos"
 SERVICE = 'ecrins'
 SECRET_KEY = "supersecretkey"
-URL_APPLICATION = "http://istsosimport.local:8002/""
+URL_APPLICATION = "http://istsosimport.local:8002/"
 
 
 [CELERY]
