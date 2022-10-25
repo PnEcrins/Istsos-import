@@ -6,13 +6,13 @@ import logging
 import isodate
 
 from flask import render_template, url_for
-from sqlalchemy import exc, update
+from sqlalchemy import exc, update, func
 
 
 from istsosimport.utils.celery import celery_app
 from istsosimport.utils.mail import send_mail
 from istsosimport.env import FILE_ERROR_DIRECTORY, db
-from istsosimport.db.models import EventTime, Import, Measure
+from istsosimport.db.models import EventTime, Import, Measure, Procedure
 from istsosimport.db.utils import get_schema_session
 
 
@@ -75,6 +75,21 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
             error_file=file_eror_name,
         )
     )
+    db.session.execute(
+        update(Procedure)
+        .where(Procedure.id_prc == procedure_dict["id_prc"])
+        .values(
+            stime_prc=db.session.query(func.min(EventTime.time_eti))
+            .select_from(EventTime)
+            .filter_by(id_prc_fk=procedure_dict["id_prc"])
+            .scalar(),
+            etime_prc=db.session.query(func.max(EventTime.time_eti))
+            .select_from(EventTime)
+            .filter_by(id_prc_fk=procedure_dict["id_prc"])
+            .scalar(),
+        )
+    )
+
     db.session.commit()
     template = render_template(
         "mail_template.html",

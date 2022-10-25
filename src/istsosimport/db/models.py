@@ -23,6 +23,8 @@ class Procedure(db.Model):
     id_prc = db.Column(db.Integer, primary_key=True)
     assignedid_prc = db.Column(db.Unicode)
     name_prc = db.Column(db.Unicode)
+    stime_prc = db.Column(db.DateTime)
+    etime_prc = db.Column(db.DateTime)
     proc_obs = db.relationship(
         "ProcObs",
         lazy="joined",
@@ -73,7 +75,6 @@ class Measure(db.Model):
     )
     event_time = db.relationship("EventTime", back_populates="measures")
 
-    #### TODO : quality index coul be at obs property level ...
     def set_quality(self, proc_obs):
         """
         Set the quality index with the given quality constraint
