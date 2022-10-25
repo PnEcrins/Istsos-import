@@ -43,18 +43,18 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                 id_prc_fk=procedure_dict["id_prc"],
                 time_eti=isodate.parse_datetime(row[date_col]),
             )
-            for proc in procedure_dict["proc_obs"]:
-                val_col = csv_mapping[proc["observed_property"]["def_opr"]]
-                try:
+            try:
+                for proc in procedure_dict["proc_obs"]:
+                    val_col = csv_mapping[proc["observed_property"]["def_opr"]]
                     floated_value = float(row[val_col])
-                except Exception as e:
-                    error_message.append(e)
-                    csv_writer.writerow(row)
-                    continue
-                measure = Measure(val_msr=floated_value, id_pro_fk=proc["id_pro"])
-                measure.set_quality(proc)
-                eventtime.measures.append(measure)
-                db.session.add(eventtime)
+            except Exception as e:
+                error_message.append(e)
+                csv_writer.writerow(row)
+                continue
+            measure = Measure(val_msr=floated_value, id_pro_fk=proc["id_pro"])
+            measure.set_quality(proc)
+            eventtime.measures.append(measure)
+            db.session.add(eventtime)
             try:
                 db.session.commit()
                 total_succeed = total_succeed + 1
