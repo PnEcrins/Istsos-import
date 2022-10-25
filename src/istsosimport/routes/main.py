@@ -15,7 +15,6 @@ from flask import (
     current_app,
     abort,
     current_app,
-    session,
     g,
 )
 from werkzeug.utils import secure_filename
@@ -85,7 +84,7 @@ def mapping(id_import, missing_cols=[]):
         abort(404)
     in_columns_name = []
     with open(path) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=session.get("separator"))
+        csv_reader = csv.reader(csv_file, delimiter=imp.delimiter)
         for row in csv_reader:
             in_columns_name = row
             break
@@ -126,7 +125,7 @@ def load(id_import):
     import_data.delay(
         import_dict=ImportSchema().dump(imp),
         filename=imp.file_name,
-        separator=session.get("separator"),
+        separator=imp.delimiter,
         config=config,
         csv_mapping=csv_mapping,
         service=config["SERVICE"],

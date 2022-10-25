@@ -62,6 +62,7 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                 log.error(e)
                 error_message.append(e)
                 csv_writer.writerow(row)
+                db.session.rollback()
 
         file_error.close()
 
@@ -81,7 +82,9 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
         nb_row_total=total_rows,
         nb_row_inserted=total_succeed,
         error_message=error_message,
-        file_error=url_for("static", filename="error_files/" + file_eror_name),
+        file_error=url_for(
+            "static", filename="error_files/" + file_eror_name, _external=True
+        ),
     )
 
     send_mail(import_dict["email"], "Import IstSOS", template)

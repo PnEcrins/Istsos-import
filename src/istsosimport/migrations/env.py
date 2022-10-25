@@ -69,7 +69,6 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    print("MIGRATE ??????")
 
     # this callback is used to prevent an auto-migration from being generated
     # when there are no changes to the schema

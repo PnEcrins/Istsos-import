@@ -22,6 +22,7 @@ def create_app():
     url_app = urlparse(config["URL_APPLICATION"])
     app.config["APPLICATION_ROOT"] = url_app.path
     app.config["PREFERRED_URL_SCHEME"] = url_app.scheme
+    app.config["SERVER_NAME"] = url_app.netloc
     if "SCRIPT_NAME" not in os.environ:
         os.environ["SCRIPT_NAME"] = app.config["APPLICATION_ROOT"].rstrip("/")
     config_loggers(conf)
