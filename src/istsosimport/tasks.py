@@ -29,8 +29,10 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
     file_error = open(str(FILE_ERROR_DIRECTORY / file_eror_name), "w")
     with open(os.path.join(config["UPLOAD_FOLDER"], filename)) as csvfile:
         csvreader = csv.DictReader(csvfile, delimiter=separator)
+        columns_for_error_file = csvreader.fieldnames.copy()
+        columns_for_error_file.append("error_reason")
         csv_writer = csv.DictWriter(
-            file_error, delimiter=separator, fieldnames=csvreader.fieldnames
+            file_error, delimiter=separator, fieldnames=columns_for_error_file
         )
         csv_writer.writeheader()
         total_succeed = 0
@@ -48,6 +50,7 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                     val_col = csv_mapping[proc["observed_property"]["def_opr"]]
                     floated_value = float(row[val_col])
             except Exception as e:
+                row["error_reason"] = e
                 error_message.append(e)
                 csv_writer.writerow(row)
                 continue
@@ -61,6 +64,7 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
             except exc.SQLAlchemyError as e:
                 log.error(e)
                 error_message.append(e)
+                row["error_reason"] = e
                 csv_writer.writerow(row)
                 db.session.rollback()
 
