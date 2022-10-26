@@ -75,7 +75,9 @@ class ImportView(ModelView):
             and (model.nb_row_total > model.nb_row_inserted)
         ):
             url = url_for("static", filename="error_files/" + model.error_file)
-            markupstring = f"<a href='{url}'> <i class='bi bi-download'></i> </a>"
+            markupstring = (
+                f" <a href='{url}'> Download <i class='bi bi-download'></i> </a>"
+            )
             return Markup(markupstring)
         else:
             return ""
