@@ -89,27 +89,31 @@ class Measure(db.Model):
         # if not constraint at station level and property leve set DEFAULT QI
         if (
             not proc_obs["constr_pro"]
-            or not proc_obs["observed_property"]["constr_opr"]
+            and not proc_obs["observed_property"]["constr_opr"]
         ):
             self.id_qi_fk = config["DATA_QI"]["DEFAULT_QI"]
+            return
 
         # if at least on check, check as invalid before tests
         else:
             self.id_qi_fk = config["DATA_QI"]["INVALID_QI"]
-            return
 
         # first check at property level
         self._set_qi(
-            quality_constainst=json.loads(proc_obs["observed_property"]["constr_opr"]),
+            quality_constainst=proc_obs["observed_property"]["constr_opr"],
             valid_qi_constant=config["DATA_QI"]["VALID_PROPERTY_QI"],
         )
         # check at station level
         self._set_qi(
-            quality_constainst=json.loads(proc_obs["constr_pro"]),
+            quality_constainst=proc_obs["constr_pro"],
             valid_qi_constant=config["DATA_QI"]["VALID_STATION_QI"],
         )
 
     def _set_qi(self, quality_constainst, valid_qi_constant):
+        if quality_constainst is None:
+            return
+        else:
+            quality_constainst = json.loads(quality_constainst)
         if "min" in quality_constainst:
             checker = float(quality_constainst["min"])
             if self.val_msr >= checker:
@@ -120,10 +124,12 @@ class Measure(db.Model):
                 self.id_qi_fk = valid_qi_constant
         elif "interval" in quality_constainst:
             checker = quality_constainst["interval"]
-            if self.val_msr >= checker[0] and self.val_msr <= checker[1]:
+            if self.val_msr >= float(checker[0]) and self.val_msr <= float(checker[1]):
                 self.id_qi_fk = valid_qi_constant
         elif "valueList" in quality_constainst:
-            if self.val_msr in quality_constainst["valueList"]:
+            if self.val_msr in list(
+                map(lambda v: float(v), quality_constainst["valueList"])
+            ):
                 self.id_qi_fk = valid_qi_constant
 
 
@@ -140,5 +146,6 @@ class Import(db.Model):
     error_file = db.Column(db.Unicode)
     delimiter = db.Column(db.Unicode)
     service = db.Column(db.Unicode, nullable=False)
+    timezone = db.Column(db.Unicode)
 
     procedure = db.relationship(Procedure, lazy="joined")
