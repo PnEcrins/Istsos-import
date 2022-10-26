@@ -1,0 +1,25 @@
+[Unit]
+Description=IstsosImport Celery Worker Service
+After=redis-server.service
+After=postgresql.service
+Requires=redis-server.service
+Requires=postgresql.service
+ReloadPropagatedFrom=istsosimport.service
+
+[Service]
+Type=simple
+User=${USER}
+Group=${USER}
+WorkingDirectory=${BASE_DIR}/
+Environment=CELERY_APP="istsosimport.celery_app:app"
+Environment=CELERYD_LOG_FILE="/var/log/istsosimport/%N%I.log"
+Environment=CELERYD_LOG_LEVEL="INFO"
+EnvironmentFile=-${BASE_DIR}/environ
+ExecStart=${BASE_DIR}/backend/venv/bin/celery -A ${CELERY_APP} worker \
+                        --logfile=${CELERYD_LOG_FILE} \
+                        --loglevel=${CELERYD_LOG_LEVEL} \
+                        $CELERYD_OPTS
+ExecReload=/bin/kill -s HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
