@@ -4,6 +4,7 @@ import datetime
 import logging
 import os
 
+import pytz
 from pathlib import Path
 
 from flask import (
@@ -48,6 +49,7 @@ def upload():
         return render_template(
             "upload.html",
             procedures=[schema.dump(p) for p in procedures],
+            timezones=list(pytz.all_timezones),
         )
     else:
         f = request.files["file"]
@@ -55,6 +57,8 @@ def upload():
         data["service"] = config["SERVICE"]
         filename = secure_filename(f"{datetime.datetime.now()}-{f.filename}")
         data["file_name"] = filename
+        if data["timezone"] == "null":
+            data["timezone"] = None
         imp = ImportSchema().load(data=data, session=db.session)
         db.session.add(imp)
         db.session.commit()

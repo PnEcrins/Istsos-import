@@ -3,9 +3,11 @@ from datetime import datetime
 import os
 import logging
 
+import pytz
 import isodate
 
 from flask import render_template, url_for
+from marshmallow import EXCLUDE
 from sqlalchemy import exc, update, func
 
 
@@ -14,6 +16,7 @@ from istsosimport.utils.mail import send_mail
 from istsosimport.env import FILE_ERROR_DIRECTORY, db
 from istsosimport.db.models import EventTime, Import, Measure, Procedure
 from istsosimport.db.utils import get_schema_session
+from istsosimport.schemas import EvenTimeSchema
 
 
 log = logging.getLogger()
@@ -40,12 +43,19 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
         error_message = []
         for row in csvreader:
             total_rows = total_rows + 1
-            date_col = csv_mapping["urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"]
-            eventtime = EventTime(
-                id_prc_fk=procedure_dict["id_prc"],
-                time_eti=isodate.parse_datetime(row[date_col]),
-            )
             try:
+                date_col = csv_mapping[
+                    "urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"
+                ]
+                event_time_dict = EvenTimeSchema().load(
+                    {
+                        "id_prc_fk": procedure_dict["id_prc"],
+                        "time_eti": row[date_col],
+                        "timezone": import_dict["timezone"],
+                    },
+                    unknown=EXCLUDE,
+                )
+                eventtime = EventTime(**event_time_dict)
                 for proc in procedure_dict["proc_obs"]:
                     val_col = csv_mapping[proc["observed_property"]["def_opr"]]
                     floated_value = float(row[val_col])

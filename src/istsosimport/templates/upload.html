@@ -27,6 +27,15 @@
          </select>
       </div>
       <div class="mb-3">
+         <label for="timezone">Time zone (if date column don't specify it)</label>
+         <select class="form-select mb-3" name="timezone" id="timezone" >
+            <option value="null"> -- Select a timezone -- </option>
+            {% for timezone in timezones %}
+            <option value="{{timezone}}"> {{timezone}} </option>
+            {% endfor %}
+         </select>
+      </div>
+      <div class="mb-3">
          <label for="email">Mail (for import report)</label>
          <input class="form-control" type="text" name="email" required>
       </div>
