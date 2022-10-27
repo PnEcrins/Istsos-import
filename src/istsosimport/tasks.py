@@ -70,7 +70,6 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
             # validation Error : the date is not correct  
             except ValidationError as e:
                 log.error(e)
-                log.error(row)
                 row["error_reason"] = e
                 error_message.append(e)
                 csv_writer.writerow(row)
