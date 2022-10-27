@@ -88,3 +88,7 @@ sudo systemctl reload istsosimport.service
 The float representation change between countries :
 In UK `'123,6'` mean `1236.0` whereas in France its float representation is `123.6`.
 The app take the current server locale to determine how cast string to float. You can override this behaviour with the parameter `LOCALE`
+
+### Null and Nan values
+
+If the values of a observed properties is missing you must fill it with the "Nan" values. An empty valuesn "NULL", or any other values not convertible to float will cause an error for all the corresponding eventime.
