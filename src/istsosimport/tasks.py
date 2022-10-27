@@ -62,21 +62,19 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                 for proc in procedure_dict["proc_obs"]:
                     val_col = csv_mapping[proc["observed_property"]["def_opr"]]
                     floated_value = atof(row[val_col])
-            # validation Error : the date is not correct - ValueError : float cast error  
+                    measure = Measure(val_msr=floated_value, id_pro_fk=proc["id_pro"])
+                    measure.set_quality(proc)
+                    eventtime.measures.append(measure)
+                db.session.add(eventtime)
+                db.session.commit()
+                total_succeed = total_succeed + 1
+            # validation Error : the date is not correct - ValueError : float cast error
             except (ValidationError, ValueError) as e:
                 mess = f"Error : {str(e)} \n Responsible column : {val_col}"
                 log.error(mess)
                 row["error_reason"] = mess
                 error_message.append(mess)
                 csv_writer.writerow(row)
-                continue
-            measure = Measure(val_msr=floated_value, id_pro_fk=proc["id_pro"])
-            measure.set_quality(proc)
-            eventtime.measures.append(measure)
-            db.session.add(eventtime)
-            try:
-                db.session.commit()
-                total_succeed = total_succeed + 1
             except exc.SQLAlchemyError as e:
                 log.error(e)
                 error_message.append(e)
