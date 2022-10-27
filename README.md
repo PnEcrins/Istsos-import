@@ -74,3 +74,11 @@ Run flask app and celery app in two separate terminals
     celery -A istsosimport.celery_app worker -l INFO
 
 The app is available on `http://istsosimport.local:<PORT>`
+
+# Configuration
+
+The main configuration file is `config.toml`. By default it contains only mandatory parameters. Advanced parameters variable can be found it the `config.toml.example`.
+At any cha nge in the config file, run this commands:
+
+::
+sudo systemctl reload istsosimport.service
