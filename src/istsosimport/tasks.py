@@ -62,9 +62,7 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                 for proc in procedure_dict["proc_obs"]:
                     val_col = csv_mapping[proc["observed_property"]["def_opr"]]
                     floated_value = float(row[val_col])
-            # value Error for flo                row["error_reason"] = e
-                error_message.append(e)
-                csv_writer.writerow(row)at cast
+            # value Error for float cast
             except ValueError as e:
                 total_nan = total_nan + 1
                 floated_value = math.nan
@@ -120,7 +118,7 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
         import_dict=import_dict,
         nb_row_total=total_rows,
         nb_row_inserted=total_succeed,
-        nb_nan=total_nan,
+        nb_nan = total_nan,
         error_message=error_message,
     )
 
