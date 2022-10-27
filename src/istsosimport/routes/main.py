@@ -126,7 +126,7 @@ def load(id_import):
             )
         )
 
-    import_data(
+    import_data.delay(
         import_dict=ImportSchema().dump(imp),
         filename=imp.file_name,
         separator=imp.delimiter,
