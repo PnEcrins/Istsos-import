@@ -67,7 +67,7 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                 total_nan = total_nan + 1
                 floated_value = math.nan
             # validation Error : the date is not correct  
-            except ValidationError:
+            except ValidationError as e:
                 row["error_reason"] = e
                 error_message.append(e)
                 csv_writer.writerow(row)
