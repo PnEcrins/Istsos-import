@@ -9,7 +9,6 @@ log/*
 *.ipynb
 
 
-src/istsosimport/static/error_files
 config.toml
 
 # frontend
