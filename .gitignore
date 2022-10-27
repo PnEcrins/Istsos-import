@@ -9,7 +9,6 @@ log/*
 *.ipynb
 
 
-uploaded_files/*
 src/istsosimport/static/error_files
 config.toml
 
