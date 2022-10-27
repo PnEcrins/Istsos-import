@@ -4,10 +4,10 @@ import math
 import os
 import logging
 
-import pytz
-import isodate
 
-from flask import render_template, url_for
+from locale import atof
+
+from flask import render_template
 from marshmallow import EXCLUDE
 from marshmallow.exceptions import ValidationError
 from sqlalchemy import exc, update, func
@@ -61,7 +61,7 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                 eventtime = EventTime(**event_time_dict)
                 for proc in procedure_dict["proc_obs"]:
                     val_col = csv_mapping[proc["observed_property"]["def_opr"]]
-                    floated_value = float(row[val_col])
+                    floated_value = atof(row[val_col])
             # value Error for float cast
             except ValueError as e:
                 log.error(e)

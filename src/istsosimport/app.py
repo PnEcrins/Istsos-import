@@ -1,9 +1,10 @@
+import locale
 import logging
 import os
 
 from urllib.parse import urlparse
+
 from flask import Flask, g
-from sqlalchemy.orm import Session
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from istsosimport.config.config_parser import config
@@ -13,10 +14,15 @@ from istsosimport.utils.logs import config_loggers
 
 log = logging.getLogger()
 
+def set_locale(config):
+    server_locale = locale.getdefaultlocale()
+    locale.setlocale(locale.LC_NUMERIC, config.get("LOCALE", server_locale))
+
 
 def create_app():
     app = Flask(__name__)
     conf = config.copy()
+    set_locale(config)
     conf.update(config["MAIL_CONFIG"])
     app.config.update(conf)
     url_app = urlparse(config["URL_APPLICATION"])

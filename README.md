@@ -82,3 +82,9 @@ At any cha nge in the config file, run this commands:
 
 ::
 sudo systemctl reload istsosimport.service
+
+### Float conversion
+
+The float representation change between countries :
+In UK `'123,6'` mean `1236.0` whereas in France its float representation is `123.6`.
+The app take the current server locale to determine how cast string to float. You can override this behaviour with the parameter `LOCALE`

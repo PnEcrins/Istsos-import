@@ -51,3 +51,4 @@ class Config(Schema):
     UPLOAD_FOLDER = fields.String(load_default=str(ROOT_DIR / "uploaded_files"))
     DATA_QI = fields.Nested(DataQI, load_default=DataQI().load({}))
     URL_APPLICATION = fields.String(required=True)
+    LOCALE = fields.String()
