@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+import math
 import os
 import logging
 
@@ -8,6 +9,7 @@ import isodate
 
 from flask import render_template, url_for
 from marshmallow import EXCLUDE
+from marshmallow.exceptions import ValidationError
 from sqlalchemy import exc, update, func
 
 
@@ -40,6 +42,7 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
         csv_writer.writeheader()
         total_succeed = 0
         total_rows = 0
+        total_nan = 0
         error_message = []
         for row in csvreader:
             total_rows = total_rows + 1
@@ -59,7 +62,14 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                 for proc in procedure_dict["proc_obs"]:
                     val_col = csv_mapping[proc["observed_property"]["def_opr"]]
                     floated_value = float(row[val_col])
-            except Exception as e:
+            # value Error for flo                row["error_reason"] = e
+                error_message.append(e)
+                csv_writer.writerow(row)at cast
+            except ValueError as e:
+                total_nan = total_nan + 1
+                floated_value = math.nan
+            # validation Error : the date is not correct  
+            except ValidationError:
                 row["error_reason"] = e
                 error_message.append(e)
                 csv_writer.writerow(row)
@@ -110,6 +120,7 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
         import_dict=import_dict,
         nb_row_total=total_rows,
         nb_row_inserted=total_succeed,
+        nb_nan=total_nan,
         error_message=error_message,
     )
 
