@@ -42,8 +42,8 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
         csv_writer.writeheader()
         total_succeed = 0
         total_rows = 0
-        total_nan = 0
         error_message = []
+        val_col = None
         for row in csvreader:
             total_rows = total_rows + 1
             try:
@@ -64,9 +64,10 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                     floated_value = atof(row[val_col])
             # validation Error : the date is not correct - ValueError : float cast error  
             except (ValidationError, ValueError) as e:
-                log.error(e)
-                row["error_reason"] = e
-                error_message.append(e)
+                mess = f"Error : {str(e)} \n Responsible column : {val_col}"
+                log.error(mess)
+                row["error_reason"] = mess
+                error_message.append(mess)
                 csv_writer.writerow(row)
                 continue
             measure = Measure(val_msr=floated_value, id_pro_fk=proc["id_pro"])
