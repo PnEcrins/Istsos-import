@@ -6,6 +6,7 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field
 
 from istsosimport.db.models import (
     Import,
+    Mapping,
     Procedure,
     ObservedProperty,
     ProcObs,
@@ -60,3 +61,13 @@ class ImportSchema(SQLAlchemyAutoSchema):
         load_instance = True
 
     procedure = fields.Nested(ProcedureSchema, dump_only=True)
+
+
+class MappingSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Mapping
+        include_relationships = True
+        include_fk = True
+        load_instance = True
+
+    observed_properties = fields.Nested(ObservedProperySchema, dump_only=True)

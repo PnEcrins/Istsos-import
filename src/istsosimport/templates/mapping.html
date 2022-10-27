@@ -1,9 +1,26 @@
 {% extends 'base.html' %}
+
+{% block head %}
+{{super()}}
+<script src=" {{url_for('static', filename='node_modules/petite-vue/dist/petite-vue.umd.js')}} " > </script>
+
+{% endblock %}
 {% block content %}
+
+<div id="mapping-vue">
+
+
 <div class="mb-5 w-50 mx-auto">
     <h1 >Fields mapping</h1>
     <h3 >Procedure : {{procedure.name_prc}}</h3>
 </div>
+<label for="mapping">Mappings</label>
+<select class="form-select" name="mapping" required>
+    <option value="null"> --</option>
+    {% for mapping in mappings %}
+    <option value="{{mapping.id_mapping}}"> {{mapping.name}} </option>
+    {% endfor %}
+</select>
     
     <form action="{{url_for('main.load', service=g.service, id_import=id_import)}}" method="POST" >
     {% if missing_cols %}
@@ -27,7 +44,7 @@
         </div>
         <div class="mb-3 col-8">
             <select class="form-select" name="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601" required>
-                <option value="nSull"> --</option>
+                <option value="null"> --</option>
                 {% for name in in_columns_name %}
                 <option value="{{name}}"> {{name}} </option>
                 {% endfor %}
@@ -53,5 +70,77 @@
         <button class="btn btn-success" type="submit" class="btn btn-primary ">
             Send data
          </button>
-   </form>  
+         
+        </form>  
+
+
+        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mappingNameModale">
+            Save mapping
+          </button>
+          
+          <!-- Modal -->
+          <div class="modal fade" id="mappingNameModale" tabindex="-1" aria-labelledby="emappingNameModaleLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Save mapping</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Update an existing mapping...
+                    <select v-model="existingMapping" class="form-select" name="mapping" required>
+                        <option :value="null"> --</option>
+                        {% for mapping in mappings %}
+                        <option value="{{mapping.id_mapping}}"> {{mapping.name}} </option>
+                        {% endfor %}
+                    </select>
+                        ... or create a new one
+                    <input v-model="newMapping" class="form-control" type="text" name="mapping_name" id="mappingName" placeholder="New mapping name">
+                </div>
+                <div class="alert alert-primary" v-if="existingMapping && newMapping" >
+                    Please choose a mapping to update or a new to create, but not both !
+                </div>
+                <div class="modal-footer">
+                  <button v-on:click="saveMapping()" :disabled="(existingMapping && newMapping) || (!existingMapping && !newMapping)" type="button" class="btn btn-success">Save</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+</div>
+   <script>
+   var app = PetiteVue.createApp({
+    $delimiters: ["${", "}"],
+    test: 4,
+    existingMapping: null,
+    newMapping: null,
+    formatPost() {
+        console.log(JSON.stringify($("form").serializeArray()));
+        return requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify($("form").serializeArray())
+            };
+
+    },
+    saveMapping: function() {
+        if(this.newMapping) {
+            fetch("http://istsosimport.local:8002/api/mappings", this.formatPost())
+                .then(response => response.json())
+                .then(data => {
+                    console.log("DONE");
+                });
+        } else {
+            // update
+            console.log("update");
+            console.log(this.existingMapping);
+            var formVals = $("form").serializeArray()
+            console.log(JSON.stringify(formVals));
+            
+        }
+    }
+    }).mount("#mapping-vue");
+
+    </script>
 {% endblock %}
+

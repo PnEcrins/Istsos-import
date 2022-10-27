@@ -53,6 +53,6 @@ def create_app():
     app.register_blueprint(blueprint)
     from istsosimport.routes.api import blueprint
 
-    app.register_blueprint(blueprint)
+    app.register_blueprint(blueprint, url_prefix="/api")
 
     return app

@@ -23,8 +23,8 @@ from werkzeug.datastructures import MultiDict
 
 
 from istsosimport.env import db
-from istsosimport.db.models import Import, ObservedProperty, Procedure
-from istsosimport.schemas import ImportSchema, ObservedProperySchema, ProcedureSchema
+from istsosimport.db.models import Import, Mapping, ObservedProperty, Procedure
+from istsosimport.schemas import ImportSchema, MappingSchema, ObservedProperySchema, ProcedureSchema
 from istsosimport.config.config_parser import config
 
 from istsosimport.tasks import import_data
@@ -42,13 +42,12 @@ def imports():
 
 @blueprint.route("/upload", methods=["GET", "POST"])
 def upload():
-
     if request.method == "GET":
         procedures = db.session.query(Procedure).all()
-        schema = ProcedureSchema()
+        procedure_schema = ProcedureSchema()
         return render_template(
             "upload.html",
-            procedures=[schema.dump(p) for p in procedures],
+            procedures=[procedure_schema.dump(p) for p in procedures],
             timezones=list(pytz.all_timezones),
         )
     else:
@@ -81,6 +80,8 @@ def mapping(id_import, missing_cols=[]):
     imp_schema = ImportSchema()
     imp = db.session.query(Import).get(id_import)
     import_as_dict = imp_schema.dump(imp)
+    mapping_schema = MappingSchema()
+    mappings = db.session.query(Mapping).all()
     if missing_cols:
         missing_cols = missing_cols.split(",")
     path = Path(current_app.config["UPLOAD_FOLDER"], imp.file_name)
@@ -98,6 +99,7 @@ def mapping(id_import, missing_cols=[]):
         in_columns_name=in_columns_name,
         procedure=import_as_dict["procedure"],
         missing_cols=missing_cols,
+        mappings=[mapping_schema.dump(d) for d in mappings]
     )
 
 

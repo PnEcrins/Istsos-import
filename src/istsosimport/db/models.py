@@ -149,3 +149,16 @@ class Import(db.Model):
     timezone = db.Column(db.Unicode)
 
     procedure = db.relationship(Procedure, lazy="joined")
+
+
+class Mapping(db.Model):
+    __tablename__ = "mapping"
+    __table_args__ = {"schema": "public"}
+    id_mapping = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode)
+    id_opr = db.Column(db.Integer, ForeignKey(ObservedProperty.id_opr))
+    column_name = db.Column(db.Unicode)
+
+    observed_property = db.relationship(ObservedProperty, lazy="joined")
+
+    
