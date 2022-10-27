@@ -64,10 +64,13 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                     floated_value = float(row[val_col])
             # value Error for float cast
             except ValueError as e:
+                log.error(e)
                 total_nan = total_nan + 1
                 floated_value = math.nan
             # validation Error : the date is not correct  
             except ValidationError as e:
+                log.error(e)
+                log.error(row)
                 row["error_reason"] = e
                 error_message.append(e)
                 csv_writer.writerow(row)
