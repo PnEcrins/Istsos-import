@@ -10,7 +10,7 @@
 
 {% block brand %}
 <div class="collapse navbar-collapse" id="admin-navbar-collapse">
-    <a class="navbar-brand" href="{{url_for('import.edit_view')}} ">Istsos-Import</a>
+    <a class="navbar-brand" href="{{url_for('import.edit_view')}} ">istSOS-Import</a>
 </div>
 {% endblock %}
 
@@ -22,7 +22,7 @@
 
 {% block body %}
 <div class="body-container">
-    <h1>Import list</h1>
+    <h1>Imports list</h1>
     {{ super() }}
     <a class="btn btn-success" href=" {{url_for('main.upload')}} "> New import</a>
 </div>
