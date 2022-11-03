@@ -27,7 +27,7 @@ class HomeView(BaseView):
 
 
 admin = Admin(
-    name="Istsos-import",
+    name="istSOS-import",
     template_mode="bootstrap4",
     url="/",
     index_view=HomeView(),
