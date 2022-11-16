@@ -14,6 +14,8 @@ This python Flask application allows you to import raw data files into a procedu
 
 After uploading data into istSOS database, an email will be sent with import report, including eventual errors and data quality values.
 
+## About data import
+
 ### Float conversion
 
 The float representation change between countries:  
@@ -26,7 +28,7 @@ You can override this behaviour with the parameter `LOCALE`.
 If the values of an observed properties is missing, you must fill it with the "Nan" values.  
 An empty value "NULL", or any other values not convertible to float will cause an error for all the corresponding eventimes.
 
-## Data quality
+### Data quality
 
 The data quality is calculated during the data importat folowing this steps :
 
@@ -42,11 +44,10 @@ The data quality is calculated during the data importat folowing this steps :
 
 The qualities values are configurable is the config file and the default values are :
 
-::  
- INVALID_QI = 0
-DEFAULT_QI = 100
-VALID_PROPERTY_QI = 200
-VALID_STATION_QI = 210
+    INVALID_QI = 0
+    DEFAULT_QI = 100
+    VALID_PROPERTY_QI = 200
+    VALID_STATION_QI = 210
 
 # Installation
 
