@@ -92,3 +92,25 @@ The app take the current server locale to determine how cast string to float. Yo
 ### Null and Nan values
 
 If the values of a observed properties is missing you must fill it with the "Nan" values. An empty valuesn "NULL", or any other values not convertible to float will cause an error for all the corresponding eventime.
+
+## Data quality
+
+The data quality is calculated during the data importation folowing this steps :
+
+- check if a quality constraint exist at observed propery or at procedure level
+  - If no quality constraint: set `DEFAULT_QI` and stop
+  - Else
+    - check the observed property constraint :
+      - if the value match the constraint: set `VALID_PROPERTY_QI`
+      - if not : set `INVALID_QI`
+    - check the procedure (or station) constraint
+      - if the value match the constraint: set `VALID_STATION_QI`
+      - if not : set `INVALID_QI`
+
+The qualities values are configurable is the config file and the default values are :
+
+::  
+ INVALID_QI = 0
+DEFAULT_QI = 100
+VALID_PROPERTY_QI = 200
+VALID_STATION_QI = 210
