@@ -6,3 +6,11 @@
     <link rel="stylesheet" href={{url_for("static", filename="css/main.css")}} />
     <link rel="stylesheet" href={{url_for("static", filename="node_modules/bootstrap-icons/font/bootstrap-icons.css")}} />
 {% endblock %}
+
+
+{% block access_control %}
+    <li class="nav-link">
+        <a href="/auth/logout">Logout</a>
+    </li>
+
+{% endblock %}

@@ -1,6 +1,7 @@
 flask
 SQLAlchemy
 flask-sqlalchemy
+flask-login
 Marshmallow
 flask-marshmallow
 marshmallow-sqlalchemy
@@ -15,3 +16,6 @@ flask-admin
 gunicorn
 isodate
 importlib-metadata==4.13.0;python_version < '3.8'
+flask-wtf
+itsdangerous = "<2.1"
+flask-oidc==1.4.0

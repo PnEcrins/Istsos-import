@@ -16,15 +16,17 @@ from flask import (
     current_app,
     abort,
     current_app,
-    g,
+    request,
 )
+from flask_login import login_user, login_required, current_user, logout_user
+from flask_ldap3_login.forms import LDAPLoginForm
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import MultiDict
 
 
-from istsosimport.env import db
-from istsosimport.db.models import Import, ObservedProperty, Procedure
-from istsosimport.schemas import ImportSchema, ObservedProperySchema, ProcedureSchema
+from istsosimport.env import db, oidc
+from istsosimport.db.models import Import, Procedure, User
+from istsosimport.schemas import ImportSchema, ProcedureSchema
 from istsosimport.config.config_parser import config
 
 from istsosimport.tasks import import_data
@@ -35,9 +37,15 @@ blueprint = Blueprint("main", __name__)
 log = logging.getLogger()
 
 
-@blueprint.route("/<service>/imports", methods=["GET"])
-def imports():
-    return render_template("import-list.html")
+@blueprint.route("/")
+def hello_world():
+    if hasattr(current_user, "login"):
+        return (
+            'Hello, {}, <a href="/test">See private</a> '
+            '<a href="/logout">Log out</a>'
+        ).format(current_user.login)
+    else:
+        return 'Welcome anonymous, <a href="/test">Log in</a>'
 
 
 @blueprint.route("/upload", methods=["GET", "POST"])

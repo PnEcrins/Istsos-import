@@ -32,5 +32,5 @@ def load_toml(toml_file):
     return toml.load(str(toml_file))
 
 
-config_path = os.environ.get("GEONATURE_CONFIG_FILE", DEFAULT_CONFIG_FILE)
+config_path = os.environ.get("ISTSOS_CONFIG_FILE", DEFAULT_CONFIG_FILE)
 config = load_and_validate_toml(config_path, Config)

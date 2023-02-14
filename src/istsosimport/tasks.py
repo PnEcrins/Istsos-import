@@ -69,8 +69,14 @@ def import_data(self, import_dict, filename, separator, config, csv_mapping, ser
                 db.session.commit()
                 total_succeed = total_succeed + 1
             # validation Error : the date is not correct - ValueError : float cast error
-            except (ValidationError, ValueError) as e:
+            except ValueError as e:
                 mess = f"Error : {str(e)} \n Responsible column : {val_col}"
+                log.error(mess)
+                row["error_reason"] = mess
+                error_message.append(mess)
+                csv_writer.writerow(row)
+            except ValidationError as e:
+                mess = f"Error : {str(e)} \n Responsible column : {date_col}"
                 log.error(mess)
                 row["error_reason"] = mess
                 error_message.append(mess)

@@ -1,41 +1,20 @@
-{% extends "base.html" %}
-{% block head %}
-{{ super() }}
-<link rel="stylesheet" href="{{url_for('static',filename='node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css')}}" />
+{% extends 'admin/model/list.html' %}
 
-
-<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
-<script src="{{url_for('static', filename='node_modules/jquery/dist/jquery.min.js')}}"> </script>
-<script src="{{url_for('static', filename='node_modules/datatables.net/js/jquery.dataTables.min.js')}} "> </script>
-<script src="{{url_for('static', filename='node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.js')}} "> </script>
+{% block head_css %}
+    {{super()}}
+    <link rel="stylesheet" href={{url_for("static", filename="css/main.css")}} />
+    <link rel="stylesheet" href={{url_for("static", filename="node_modules/bootstrap-icons/font/bootstrap-icons.css")}} />
 
 {% endblock %}
-{% block content %}
-<div id="import-list">
 
-    <table id="import-table">
-        <thead>
-            <tr>
-                <th> #</th>
-                <th> Procedure</th>
-                <th> Import date</th>
-                <th>File name</th>
-                <th>Nb row inserted</th>
-                <th>Nb row total</th>
-                <th>#</th>
-            </tr>
-        </thead>
 
-    </table>
 
-    <a class="btn btn-success" href=" {{url_for('main.upload', service=g.service)}} "> New import</a>
 
+
+{% block body %}
+<div class="body-container">
+    <h1>Imports list</h1>
+    {{ super() }}
+    <a class="btn btn-success" href=" {{url_for('main.upload')}} "> New import</a>
 </div>
-
-<script>
-    var service = "{{g.service}}"
-    var api_imports = "{{url_for('api.imports')}}"
-</script>
-<script type="module" src="{{url_for("static", filename='js/import-list.js')}}"></script>
-
 {% endblock %}

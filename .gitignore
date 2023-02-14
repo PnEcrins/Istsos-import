@@ -8,7 +8,7 @@ log/*
 *.pem
 *.ipynb
 
-
+src/istsosimport/client_secrets.json
 config.toml
 
 # frontend

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="POST" action="/auth/login">
+    {{ form.csrf_token }}
+    {{ form.login.label }} 
+    {{ form.login(
+        size=20, 
+        class_="form-control"
+        ) 
+    }} 
+
+    {{ form.password.label }} {{ form.password(size=20, class_="form-control") }}
+    <input class="form-control mt-2" type="submit" value="Submit">
+    {% if form.form_errors %}
+    {% for error in form.form_errors %}
+        <small  style="color:red"> {{ error }}</small>
+    {% endfor %}
+    {% endif %}
+</form>
+
+{% endblock %}
