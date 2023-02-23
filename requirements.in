@@ -1,5 +1,5 @@
 flask
-SQLAlchemy
+SQLAlchemy<2.0
 flask-sqlalchemy
 flask-login
 Marshmallow
