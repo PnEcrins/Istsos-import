@@ -16,7 +16,6 @@ from istsosimport.env import db, ma, flask_mail, ROOT_DIR, migrate, oidc
 from istsosimport.auth import login_manager
 from istsosimport.utils.celery import celery_app
 from istsosimport.utils.logs import config_loggers
-from istsosimport.db.models import User
 
 # from istsosimport.db.models import User
 
@@ -57,8 +56,8 @@ def create_app():
             "OIDC_ID_TOKEN_COOKIE_SECURE": False,
             "OIDC_REQUIRE_VERIFIED_EMAIL": False,
             "OIDC_USER_INFO_ENABLED": True,
-            # "OIDC_SCOPES": ["openid", "email", "profile"],
             "OIDC_INTROSPECTION_AUTH_METHOD": "client_secret_post",
+            "OIDC_CLIENT_SECRETS": str(ROOT_DIR / "client_secrets.json" )
         }
     )
     if config["OIDC_AUTHENT"]:

@@ -74,7 +74,7 @@ The qualities values are configurable is the config file and the default values 
     sudo pip3 install virtualenv
     virtualenv -p /usr/bin/python3 venv
     source venv/bin/activate
-    pip install .
+    pip install -e .
 
 ### Configuration file
 
@@ -98,11 +98,12 @@ The database is install with a 'admin' user which has 'ADMIN' role. If you accid
 ### Authentication
 
 IstSOS provide its own authentication/authorization and user management system. 
-In the backoffice you can create users and assign them to two type of roles (ADMIN an USER)
+In the backoffice you can create users and assign them to two type of roles (ADMIN an USER).
+The defaut installation create a user "admin",password "admin" (change it !) with role ADMIN
 User with ADMIN role can create/edit imports and create/edit user.
 User with USER role can only create/edit imports
 
-You can also plug IstSOS with an external authentication backend which implement OpenID Connect protocol (like KeyCloak). To enable this, pass the parameter `OIDC_AUTHENT` to true, unsample the file `src/istsosimport/client_secret.example.json` to `src/istsosimport/client_secret.json` and fill it. With this authentication method, all the users you have in your external user database will be able to connect to the app. You can filter the users which can access to the app with the parameter `OIDC_GROUP_AUTHORIZE` and fill it with the name of the external group you want to authorize. By default the users will be set with "USER" role. You can set them to "ADMIN" role with the command `flask auth set-admin <user-uuid>`
+You can also plug IstSOS with an external authentication backend which implement OpenID Connect protocol (like KeyCloak). To enable this, pass the parameter `OIDC_AUTHENT` to true, unsample the file `client_secret.example.json` to `istsosimport/client_secret.json` and fill it. With this authentication method, all the users you have in your external user database will be able to connect to the app. You can filter the users which can access to the app with the parameter `OIDC_GROUP_AUTHORIZE` and fill it with the name of the external group you want to authorize. By default the users will be set with "USER" role. You can set them to "ADMIN" role with the command `flask auth set-admin <user-uuid>`
 To use the command, activate the virtualenv : 
 
     source venv/bin/activate
