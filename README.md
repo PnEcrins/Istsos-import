@@ -89,6 +89,25 @@ Do not do this command if you already have an istSOS-import instance for another
 
     cd src/istsosimport
     flask db upgrade
+    # add uuid extension
+    sudo -n -u postgres -s psql -d <DB_NAME> -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+
+The database is install with a 'admin' user which has 'ADMIN' role. If you accidentaly delete this user 
+
+
+### Authentication
+
+IstSOS provide its own authentication/authorization and user management system. 
+In the backoffice you can create users and assign them to two type of roles (ADMIN an USER)
+User with ADMIN role can create/edit imports and create/edit user.
+User with USER role can only create/edit imports
+
+You can also plug IstSOS with an external authentication backend which implement OpenID Connect protocol (like KeyCloak). To enable this, pass the parameter `OIDC_AUTHENT` to true, unsample the file `src/istsosimport/client_secret.example.json` to `src/istsosimport/client_secret.json` and fill it. With this authentication method, all the users you have in your external user database will be able to connect to the app. You can filter the users which can access to the app with the parameter `OIDC_GROUP_AUTHORIZE` and fill it with the name of the external group you want to authorize. By default the users will be set with "USER" role. You can set them to "ADMIN" role with the command `flask auth set-admin <user-uuid>`
+To use the command, activate the virtualenv : 
+
+    source venv/bin/activate
+    cd src/istsosimport
+    flask auth set-admin <user-uuid>
 
 ### Production deployment
 

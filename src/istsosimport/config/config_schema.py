@@ -33,18 +33,6 @@ class DataQI(Schema):
     VALID_PROPERTY_QI = fields.Integer(load_default=200)
     VALID_STATION_QI = fields.Integer(load_default=210)
 
-
-class LDAPConfig(Schema):
-    LDAP_HOST = fields.String(required=True)
-    LDAP_BASE_DN = fields.String(required=True)
-    LDAP_USER_LOGIN_ATTR = fields.String(load_default="mail")
-    LDAP_BIND_USER_DN = fields.String(required=True)
-    LDAP_BIND_USER_PASSWORD = fields.String(required=True)
-    LDAP_USER_RDN_ATTR = fields.String(load_default="cn")
-    LDAP_USER_OBJECT_FILTER = fields.String(load_default="(objectclass=user)")
-    LDAP_USER_SEARCH_SCOPE = fields.String(load_default="SUBTREE")
-
-
 class Config(Schema):
     SQLALCHEMY_DATABASE_URI = fields.String(
         required=True,
@@ -64,4 +52,5 @@ class Config(Schema):
     URL_APPLICATION = fields.String(required=True)
     LOCALE = fields.String()
     OIDC_AUTHENT = fields.Boolean()
-    LDAP_CONFIG = fields.Nested(LDAPConfig)
+    OIDC_FILTER_VALUES = fields.List(fields.String(), load_default=[])
+    OICD_FILTER_ATTRIBUTE = fields.String()

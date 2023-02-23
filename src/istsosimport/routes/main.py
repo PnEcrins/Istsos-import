@@ -1,4 +1,3 @@
-from copy import copy
 import csv
 import datetime
 import logging
@@ -19,7 +18,6 @@ from flask import (
     request,
 )
 from flask_login import login_user, login_required, current_user, logout_user
-from flask_ldap3_login.forms import LDAPLoginForm
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import MultiDict
 
@@ -37,20 +35,13 @@ blueprint = Blueprint("main", __name__)
 log = logging.getLogger()
 
 
-@blueprint.route("/")
-def hello_world():
-    if hasattr(current_user, "login"):
-        return (
-            'Hello, {}, <a href="/test">See private</a> '
-            '<a href="/logout">Log out</a>'
-        ).format(current_user.login)
-    else:
-        return 'Welcome anonymous, <a href="/test">Log in</a>'
-
+@blueprint.route("/home")
+def home():
+    return 'You have been log out <a href="/import">Log in</a> '
 
 @blueprint.route("/upload", methods=["GET", "POST"])
+@login_required
 def upload():
-
     if request.method == "GET":
         procedures = db.session.query(Procedure).all()
         schema = ProcedureSchema()
@@ -85,6 +76,7 @@ def upload():
 
 @blueprint.route("/mapping/<int:id_import>/")
 @blueprint.route("/mapping/<int:id_import>/<missing_cols>")
+@login_required
 def mapping(id_import, missing_cols=[]):
     imp_schema = ImportSchema()
     imp = db.session.query(Import).get(id_import)
@@ -110,6 +102,7 @@ def mapping(id_import, missing_cols=[]):
 
 
 @blueprint.route("/<int:id_import>/load", methods=["POST"])
+@login_required
 def load(id_import):
     data = request.form.to_dict()
     imp = db.session.query(Import).get(id_import)
@@ -147,5 +140,6 @@ def load(id_import):
 
 
 @blueprint.route("/processing")
+@login_required
 def processing():
     return render_template("import_processing.html")

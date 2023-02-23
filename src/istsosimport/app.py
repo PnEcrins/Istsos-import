@@ -57,8 +57,7 @@ def create_app():
             "OIDC_ID_TOKEN_COOKIE_SECURE": False,
             "OIDC_REQUIRE_VERIFIED_EMAIL": False,
             "OIDC_USER_INFO_ENABLED": True,
-            # "OIDC_OPENID_REALM": "master",
-            "OIDC_SCOPES": ["openid", "email", "profile"],
+            # "OIDC_SCOPES": ["openid", "email", "profile"],
             "OIDC_INTROSPECTION_AUTH_METHOD": "client_secret_post",
         }
     )

@@ -1,5 +1,5 @@
 import json
-
+import uuid
 from sqlalchemy import ForeignKey
 from sqlalchemy import func, select
 from flask_login import UserMixin
@@ -156,7 +156,7 @@ class Import(db.Model):
 
 
 class Role(db.Model):
-    __tablename__ = "role"
+    __tablename__ = "roles"
     __table_args__ = {"schema": "public"}
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode, nullable=False)
@@ -166,12 +166,12 @@ class Role(db.Model):
 
 
 class User(db.Model, UserMixin):
-    __tablename__ = "user"
+    __tablename__ = "users"
     __table_args__ = {"schema": "public"}
 
     id = db.Column(db.Integer, primary_key=True)
     user_uuid = db.Column(
-        UUID, default=select([func.uuid_generate_v4()]), nullable=False
+        UUID, nullable=False, default=str(uuid.uuid4())
     )
     firstname = db.Column(db.Unicode)
     surname = db.Column(db.Unicode)

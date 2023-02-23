@@ -3,7 +3,9 @@ SERVICE = 'ecrins'
 SECRET_KEY = "supersecretkey"
 URL_APPLICATION = "http://istsosimport.local:8002/"
 LOCALE = "fr_FR.UTF-8"
-
+OIDC_AUTHENT = false
+OIDC_FILTER_GROUP = []
+OIDC_FILTER_VALUES = "user_group"
 
 [CELERY]
     broker_url = "redis://localhost:6379/0"
