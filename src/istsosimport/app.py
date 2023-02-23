@@ -52,7 +52,6 @@ def create_app():
 
     app.config.update(
         {
-            "OIDC_CLIENT_SECRETS": "client_secrets.json",
             "OIDC_ID_TOKEN_COOKIE_SECURE": False,
             "OIDC_REQUIRE_VERIFIED_EMAIL": False,
             "OIDC_USER_INFO_ENABLED": True,
