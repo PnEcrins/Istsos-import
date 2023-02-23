@@ -51,6 +51,6 @@ class Config(Schema):
     DATA_QI = fields.Nested(DataQI, load_default=DataQI().load({}))
     URL_APPLICATION = fields.String(required=True)
     LOCALE = fields.String()
-    OIDC_AUTHENT = fields.Boolean()
+    OIDC_AUTHENT = fields.Boolean(load_default=False)
     OIDC_FILTER_VALUES = fields.List(fields.String(), load_default=[])
     OICD_FILTER_ATTRIBUTE = fields.String()
