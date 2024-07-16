@@ -3,9 +3,20 @@ SERVICE = 'ecrins'
 SECRET_KEY = "supersecretkey"
 URL_APPLICATION = "http://istsosimport.local:8002/"
 LOCALE = "fr_FR.UTF-8"
-OIDC_AUTHENT = false
-OIDC_FILTER_GROUP = []
-OIDC_FILTER_VALUES = "user_group"
+
+
+[AUTHENTICATION]
+    DEFAULT_PROVIDER_ID = "keycloak"
+    [[AUTHENTICATION.PROVIDERS]]
+        module = "pypnusershub.auth.providers.openid_provider.OpenIDConnectProvider"
+        id_provider = "keycloak"
+        label = "KeyCloak"
+        ISSUER = "URL_ISSUER"
+        CLIENT_ID = "local-gn"
+        CLIENT_SECRET = "mysecret"
+
+
+
 
 [CELERY]
     broker_url = "redis://localhost:6379/0"

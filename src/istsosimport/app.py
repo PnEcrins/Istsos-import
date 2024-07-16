@@ -11,9 +11,11 @@ from flask import Flask, g, session
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from pypnusershub.auth import auth_manager
+
+
 from istsosimport.config.config_parser import config
-from istsosimport.env import db, ma, flask_mail, ROOT_DIR, migrate, oidc
-from istsosimport.auth import login_manager
+from istsosimport.env import db, ma, flask_mail, ROOT_DIR, migrate
 from istsosimport.utils.celery import celery_app
 from istsosimport.utils.logs import config_loggers
 
@@ -44,23 +46,11 @@ def create_app():
 
     flask_mail.init_app(app)
     db.init_app(app)
+    with app.app_context():
+        db.create_all()
     ma.init_app(app)
     migrate.init_app(app, db)
     celery_app.conf.update(app.config["CELERY"])
-
-    login_manager.init_app(app)
-
-    app.config.update(
-        {
-            "OIDC_ID_TOKEN_COOKIE_SECURE": False,
-            "OIDC_REQUIRE_VERIFIED_EMAIL": False,
-            "OIDC_USER_INFO_ENABLED": True,
-            "OIDC_INTROSPECTION_AUTH_METHOD": "client_secret_post",
-            "OIDC_CLIENT_SECRETS": str(ROOT_DIR / "client_secrets.json" )
-        }
-    )
-    if config["OIDC_AUTHENT"]:
-        oidc.init_app(app)
 
     # flask admin
     app.config["FLASK_ADMIN_SWATCH"] = "simplex"
@@ -75,9 +65,7 @@ def create_app():
     app.register_blueprint(blueprint)
     from istsosimport.routes.api import blueprint
 
-    app.register_blueprint(blueprint)
+    app.register_blueprint(blueprint, url_prefix="/test")
 
-    from istsosimport.routes.auth import blueprint
-
-    app.register_blueprint(blueprint=blueprint, url_prefix="/auth")
+    auth_manager.init_app(app, providers_declaration=config["AUTHENTICATION"]["PROVIDERS"])
     return app

@@ -22,7 +22,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import MultiDict
 
 
-from istsosimport.env import db, oidc
+from istsosimport.env import db
 from istsosimport.db.models import Import, Procedure, User
 from istsosimport.schemas import ImportSchema, ProcedureSchema
 from istsosimport.config.config_parser import config

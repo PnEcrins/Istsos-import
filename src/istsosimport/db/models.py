@@ -5,8 +5,10 @@ from sqlalchemy import func, select
 from flask_login import UserMixin
 from sqlalchemy.dialects.postgresql import UUID
 
+# for migration
+from pypnusershub.db.models import *
 
-from istsosimport.env import db, oidc
+from istsosimport.env import db
 from istsosimport.config.config_parser import config
 
 
@@ -155,31 +157,3 @@ class Import(db.Model):
     procedure = db.relationship(Procedure, lazy="joined")
 
 
-class Role(db.Model):
-    __tablename__ = "roles"
-    __table_args__ = {"schema": "public"}
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode, nullable=False)
-
-    def __repr__(self):
-        return self.name
-
-
-class User(db.Model, UserMixin):
-    __tablename__ = "users"
-    __table_args__ = {"schema": "public"}
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_uuid = db.Column(
-        UUID, nullable=False, default=str(uuid.uuid4())
-    )
-    firstname = db.Column(db.Unicode)
-    surname = db.Column(db.Unicode)
-    login = db.Column(db.Unicode)
-    pwd = db.Column(db.String(300))
-    email = db.Column(db.Unicode, nullable=False)
-    id_role = db.Column(db.Integer, ForeignKey(Role.id))
-    role = db.relationship("Role")
-
-    def get_id(self):
-        return self.id

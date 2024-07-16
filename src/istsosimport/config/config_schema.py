@@ -1,8 +1,7 @@
-from dataclasses import Field
-import os
 from marshmallow import (
     Schema,
     fields,
+    INCLUDE
 )
 
 from marshmallow.validate import Regexp
@@ -33,6 +32,15 @@ class DataQI(Schema):
     VALID_PROPERTY_QI = fields.Integer(load_default=200)
     VALID_STATION_QI = fields.Integer(load_default=210)
 
+class AuthenticationConfig(Schema):
+    PROVIDERS = fields.List(
+        fields.Dict(), load_default=[]
+    )
+
+    DEFAULT_RECONCILIATION_GROUP_ID = fields.Integer()
+    DEFAULT_PROVIDER_ID = fields.String(required=True)
+
+
 class Config(Schema):
     SQLALCHEMY_DATABASE_URI = fields.String(
         required=True,
@@ -51,6 +59,7 @@ class Config(Schema):
     DATA_QI = fields.Nested(DataQI, load_default=DataQI().load({}))
     URL_APPLICATION = fields.String(required=True)
     LOCALE = fields.String()
-    OIDC_AUTHENT = fields.Boolean(load_default=False)
-    OIDC_FILTER_VALUES = fields.List(fields.String(), load_default=[])
-    OICD_FILTER_ATTRIBUTE = fields.String()
+    AUTHENTICATION = fields.Nested(
+        AuthenticationConfig,
+        unknown=INCLUDE
+    )

@@ -1,6 +1,7 @@
 from fileinput import filename
 from functools import partial
-from flask import g, redirect, url_for, Markup, flash
+from flask import g, redirect, url_for, flash
+from markupsafe import Markup
 from flask_admin import Admin, expose, AdminIndexView, BaseView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter
@@ -10,7 +11,9 @@ from wtforms import PasswordField
 from wtforms.validators import InputRequired
 
 from istsosimport.env import db, FILE_ERROR_DIRECTORY
-from istsosimport.db.models import Import, Procedure, User, Role
+from istsosimport.db.models import Import, Procedure
+from istsosimport.config.config_parser import config
+from pypnusershub.db.models import User
 
 
 # https://github.com/flask-admin/flask-admin/issues/1807
@@ -69,7 +72,7 @@ class ImportView(ModelView):
         return current_user.is_authenticated
 
     def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.login", provider=config["AUTHENTICATION"]["DEFAULT_PROVIDER_ID"]))
 
     @property
     def column_list(self):
@@ -101,32 +104,32 @@ class ImportView(ModelView):
 admin.add_view(ImportView(Import, db.session, "Imports"))
 
 
-class CustomPasswordField(
-    PasswordField
-):  # If you don't want hide the password you can use a StringField
-    def populate_obj(self, obj, name):
-        setattr(obj, name, generate_password_hash(self.data))  # Password function
+# class CustomPasswordField(
+#     PasswordField
+# ):  # If you don't want hide the password you can use a StringField
+#     def populate_obj(self, obj, name):
+#         setattr(obj, name, generate_password_hash(self.data))  # Password function
 
 
-class UserView(ModelView):
-    can_edit = True
-    can_create = True
-    column_exclude_list = "pwd"
-    form_excluded_columns = "user_uuid"
-    form_extra_fields = {
-        "pwd": CustomPasswordField("Password", validators=[InputRequired()]),
-        "verified_password": PasswordField(validators=[InputRequired()]),
-    }
+# class UserView(ModelView):
+#     can_edit = True
+#     can_create = True
+#     column_exclude_list = "pwd"
+#     form_excluded_columns = "user_uuid"
+#     form_extra_fields = {
+#         "pwd": CustomPasswordField("Password", validators=[InputRequired()]),
+#         "verified_password": PasswordField(validators=[InputRequired()]),
+#     }
 
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.role.name == "ADMIN"
+#     def is_accessible(self):
+#         return current_user.is_authenticated and current_user.role.name == "ADMIN"
 
-    def validate_form(self, form):
-        """Custom validation code that checks dates"""
-        if form.pwd.data != form.verified_password.data:
-            flash("Password are not the same", "error")
-            return False
-        return super(UserView, self).validate_form(form)
+#     def validate_form(self, form):
+#         """Custom validation code that checks dates"""
+#         if form.pwd.data != form.verified_password.data:
+#             flash("Password are not the same", "error")
+#             return False
+#         return super(UserView, self).validate_form(form)
 
 
-admin.add_view(UserView(User, db.session, "Users"))
+# admin.add_view(UserView(User, db.session, "Users"))
