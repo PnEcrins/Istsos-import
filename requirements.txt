@@ -23,7 +23,6 @@ greenlet==3.0.3
 gunicorn==22.0.0
 idna==3.7
 isodate==0.6.1
--e git+ssh://git@github.com/PnEcrins/istSOS-import.git@2e765a9a56c2b71724efbbc200088979b7635552#egg=istsos_import
 itsdangerous==2.2.0
 Jinja2==3.1.4
 kombu==4.6.11
@@ -35,7 +34,6 @@ packaging==24.1
 psycopg2==2.9.9
 psycopg2-binary==2.9.9
 pycparser==2.22
--e git+ssh://git@github.com/PnX-SI/UsersHub-authentification-module.git@ca2a943829004e9431ed588c9ac05b23cbac2321#egg=pypnusershub
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.1
