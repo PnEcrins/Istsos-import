@@ -68,11 +68,11 @@ class ImportView(ModelView):
     list_template = "import-list.html"
     page_size = 10
 
-    def is_accessible(self):
-        return current_user.is_authenticated
+    # def is_accessible(self):
+    #     return current_user.is_authenticated
 
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for("auth.login", provider=config["AUTHENTICATION"]["DEFAULT_PROVIDER_ID"]))
+    # def inaccessible_callback(self, name, **kwargs):
+    #     return redirect(url_for("auth.login", provider=config["AUTHENTICATION"]["DEFAULT_PROVIDER_ID"]))
 
     @property
     def column_list(self):

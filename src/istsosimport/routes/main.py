@@ -39,8 +39,9 @@ log = logging.getLogger()
 def home():
     return 'You have been log out <a href="/import">Log in</a> '
 
+# @login_required
+
 @blueprint.route("/upload", methods=["GET", "POST"])
-@login_required
 def upload():
     if request.method == "GET":
         procedures = db.session.query(Procedure).all()
@@ -73,10 +74,10 @@ def upload():
             )
         )
 
+# @login_required
 
 @blueprint.route("/mapping/<int:id_import>/")
 @blueprint.route("/mapping/<int:id_import>/<missing_cols>")
-@login_required
 def mapping(id_import, missing_cols=[]):
     imp_schema = ImportSchema()
     imp = db.session.query(Import).get(id_import)
@@ -100,9 +101,9 @@ def mapping(id_import, missing_cols=[]):
         missing_cols=missing_cols,
     )
 
+# @login_required
 
 @blueprint.route("/<int:id_import>/load", methods=["POST"])
-@login_required
 def load(id_import):
     data = request.form.to_dict()
     imp = db.session.query(Import).get(id_import)
@@ -138,8 +139,8 @@ def load(id_import):
 
     return redirect(url_for("main.processing"))
 
+# @login_required
 
 @blueprint.route("/processing")
-@login_required
 def processing():
     return render_template("import_processing.html")
